@@ -1,0 +1,8 @@
+{
+"inputColIndex":[1,2,3,4],
+"labelColIndex":[0],
+"inputCnt":5,
+"outputCnt":1,
+"outputColIndex":[0],
+"inputCol":[1,2,3,4]
+}

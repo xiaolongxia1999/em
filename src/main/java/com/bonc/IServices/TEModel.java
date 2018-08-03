@@ -1,0 +1,7 @@
+package com.bonc.IServices;
+
+/**
+ * Created by Administrator on 2018/7/10 0010.
+ */
+public interface TEModel {
+}

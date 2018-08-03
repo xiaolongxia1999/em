@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="energymanagement:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/energymanagement_jar</output-path>
+    <root id="archive" name="energymanagement.jar">
+      <element id="module-output" name="energymanagement" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/commons-beanutils.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/commons-collections-3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/commons-lang-2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/commons-logging.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/ezmorph-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/json-lib-1.1-jdk13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/Jar/jsonLib/lib/lib/xom-1.0d10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/InstallPacksges/JIDT/infodynamics-jar-1.4/infodynamics.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/InstallPacksges/spark-timeseries-master/spark-timeseries-master/classes/artifacts/sparkts_jar/sparkts.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="E:/bonc/工业第三期需求/bonc第3期项目打包/能源管理平台3期0720/能源管理平台3期/预警分析/场景jar包/依赖包/FastDTW-1.0-SNAPSHOT.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

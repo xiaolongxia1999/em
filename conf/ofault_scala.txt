@@ -1,0 +1,9 @@
+{
+"inputCnt":2,
+"outputCnt":1,
+"outputColIndex":[1],
+"inputColIndex":[0,1,2,3],
+"labelColIndex":[4],
+"w":40,
+"threshold":350
+}
