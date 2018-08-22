@@ -61,21 +61,21 @@ object main {
     model.loadModel(savePath)
     model.predict(predictSetRaw)
   }
-
-  def clac(shortName:String,jsonStr:String,predictSetRaw:Array[Row]):Unit= {
-    //    val path = "conf/default.properties"
-    val dirs  = new File("")
-    val fileSep = File.separator
-    val path = dirs.getAbsolutePath +fileSep + "conf"+ fileSep+"default.properties"
-
-    //加载类名，动态创建IModel实例
-    val props = ModelsFactory.init(path)
-    val model = ModelsFactory.produce(shortName,props)
-
-    model.setParam(jsonStr)
-
-    model.(predictSetRaw)
-  }
+//
+//  def clac(shortName:String,jsonStr:String,predictSetRaw:Array[Row]):Unit= {
+//    //    val path = "conf/default.properties"
+//    val dirs  = new File("")
+//    val fileSep = File.separator
+//    val path = dirs.getAbsolutePath +fileSep + "conf"+ fileSep+"default.properties"
+//
+//    //加载类名，动态创建IModel实例
+//    val props = ModelsFactory.init(path)
+//    val model = ModelsFactory.produce(shortName,props)
+//
+//    model.setParam(jsonStr)
+//
+//    model.calc(predictSetRaw)
+//  }
 
 
 

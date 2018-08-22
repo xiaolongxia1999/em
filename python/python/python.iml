@@ -21,18 +21,5 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES />
-        <JAVADOC />
-        <NATIVE>
-          <root url="file://D:/Anaconda3/Lib/site-packages/isapi" />
-          <root url="file://D:/Anaconda3/Lib/site-packages/pythonwin" />
-          <root url="file://D:/Anaconda3/Lib/site-packages/pywin32_system32" />
-          <root url="file://D:/Anaconda3/Lib/site-packages/win32" />
-        </NATIVE>
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>
