@@ -3,6 +3,7 @@ package com.bonc.examples
 import com.bonc.interfaceRaw.ICalc
 import com.bonc.models.RiskEvaluation
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext, sql}
 
@@ -12,10 +13,13 @@ import scala.io.Source
   * Created by patrick on 2018/4/13.
   * 作者：
   */
-object RiskEvaluationMain{
-  Logger.getLogger("org").setLevel(Level.WARN)
-  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
-  Logger.getLogger("org.apache.hadoop").setLevel(Level.WARN)
+
+
+object RiskEvaluationMain {
+  val logger = Logger.getLogger(RiskEvaluationMain.getClass())
+//  Logger.getLogger("org").setLevel(Level.WARN)
+//  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+//  Logger.getLogger("org.apache.hadoop").setLevel(Level.WARN)
 //  val conf = new SparkConf().set("spark.driver.memory","2g").set("spark.executor.memory","2g").setAppName("RiskEvaluation").setMaster("local[*]")  //本地模式
 ////  val conf = new SparkConf().setAppName("RiskEvaluation").setMaster("spark://172.16.32.139:7077")  //biop 集群
 //  val spark = new sql.SparkSession.Builder().config(conf).getOrCreate()
@@ -56,8 +60,15 @@ object RiskEvaluationMain{
     //  val conf = new SparkConf().setAppName("RiskEvaluation").setMaster("spark://172.16.32.139:7077")  //biop 集群
 //    val spark = new sql.SparkSession.Builder().config(conf).getOrCreate()
 
-    val df =spark.read.option("header",true).option("inferSchema",true).csv(inputfile)
 
+    try {
+      val df = spark.read.option("header", true).option("inferSchema", true).csv(inputfile)
+    } catch {
+      case ex:Exception =>
+//        logger.trace("ff",ex)
+        logger.error("ffffff", ex)
+    }
+    val df = spark.read.option("header", true).option("inferSchema", true).csv(inputfile)
     df.cache()
 
     val risckeval:ICalc[Row] = new RiskEvaluation().asInstanceOf[ICalc[Row]]

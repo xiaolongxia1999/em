@@ -3,7 +3,7 @@ from GA.NsgaII import  *
 import pandas as pd
 from pandas import *
 
-
+print(1)
 # df = pd.DataFrame([[7, 8], [8, 7], [12, 6], [14, 5], [6, 1], [2, 3], [5, 4], [3, 4], [6, 2]])
 # row_size =len(df)
 # col_size = len(df)

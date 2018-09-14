@@ -1,0 +1,43 @@
+{
+    "goals_function": {
+        "goal1": {
+            "decision_variables": [
+                "CZ3-FC7002",
+                "CZ3-TI7001",
+                "CZ3-TI7003",
+                "CZ3-TI7005",
+                "CZ3-TI7007"
+            ],
+            "expr": "CZ3-FC7007/CZ3-FC7002*100"
+        },
+        "goal2": {
+            "decision_variables": [
+                "CZ3-TI7041",
+                "CZ3-TI7043",
+                "CZ3-PI7008",
+                "CZ3-PI7101"
+            ],
+            "expr": "CZ3-FIC7009/CZ3-FC7002*100"
+        },
+        "goal3": {
+            "decision_variables": [
+                "CZ3-FI7017",
+                "CZ3-FI7018",
+                "CZ3-FI7019",
+                "CZ3-FI7020"
+            ],
+            "expr": "CZ3-FI7017+CZ3-FI7018+CZ3-FI7019+CZ3-FI7020"
+        },
+        "goal4": {
+            "decision_variables": [
+                "CZ3-FC7002",
+                "CZ3-TI7001",
+                "CZ3-TI7003",
+                "CZ3-TI7005",
+                "CZ3-TI7007"
+            ],
+            "expr": "CZ3-FI7006*0.0000899/CZ3-FC7002*100"
+        }
+    }
+
+}
