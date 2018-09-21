@@ -64,10 +64,13 @@ class Mopso:
 
     def done(self, cycle_):
         self.initialize()
-        self.plot_.show(self.in_, self.fitness_, self.archive_in, self.archive_fitness, -1)
+        # self.plot_.show(self.in_, self.fitness_, self.archive_in, self.archive_fitness, -1)
         for i in range(cycle_):
+            print("第%d次迭代:-----------------------------------------------------------" %i)
             self.update_()
-            self.plot_.show(self.in_, self.fitness_, self.archive_in, self.archive_fitness, i)
+            #self.plot_.show(self.in_, self.fitness_, self.archive_in, self.archive_fitness, i)
+        #最后一次显示图形
+        self.plot_.show(self.in_, self.fitness_, self.archive_in, self.archive_fitness, i)
         return self.archive_in, self.archive_fitness
 
 

@@ -37,10 +37,10 @@ class mesh_crowd(object):
             #原代码如下——
             # id_dim = int((in_[i] - self.min_[i]) * self.num_ / (self.max_[i] - self.min_[i]))
             id_dim = int((in_[i] - self.min_[i]) * self.mesh_div / (self.max_[i] - self.min_[i]))
-
+            #@warn 有些id为负，这个需要修改逻辑错误
             print("id_dim "+str(i)+"is"+str(id_dim))
             id_ = id_ + id_dim * (self.mesh_div ** i)
-            print(id_)
+            #print(id_)
         return id_
 
     #计算粒子所在的网格id
@@ -124,7 +124,7 @@ class get_gbest(mesh_crowd):
         for i in range(self.particles):
             #此处，对于每个粒子都获取一个gbest_index索引， 然后更新gbest_in矩阵，其和粒子的索引位置，也是一样的
             gbest_index = self.get_gbest_index()
-            print("gbest_index is " + str(gbest_index))
+            #print("gbest_index is " + str(gbest_index))
             #根据gbest_index确定全局粒子引导者，在外部储备集的位置，然后得到“该全局粒子”的位置、适应度矩阵
             self.gbest_in[i] = self.curr_archiving_in[gbest_index]
             self.gbest_fit[i] = self.curr_archiving_fit[gbest_index]
@@ -176,7 +176,7 @@ class clear_archiving(mesh_crowd):
         clear_index = self.get_clear_index()
 
         #@warn这两行代码有问题，gbest_index处，貌似全局都没有该变量，推断为如下
-        print([ i for i in self.curr_archiving_in])
+        #print([ i for i in self.curr_archiving_in])
 
         #安装np的语法，我这个应该是没错的，得到clear_index这个列表后，直接删除所有curr_archiving_in中的对应行（clear_index是要被删除的行数）
         self.curr_archiving_in = np.delete(self.curr_archiving_in, clear_index, axis=0)

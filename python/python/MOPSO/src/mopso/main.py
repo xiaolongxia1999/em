@@ -22,7 +22,7 @@ def main():
     c2 = 0.3
 
     # particles = 100
-    cycle_ = 30
+    cycle_ = 100
     mesh_div = 10           #网格参数，线性空间10等分
     thresh = 300            #外部储备集阀值，最多保留300个非占优解
     # min_ = np.array([0, 0])             #min_是n维线性空间的下界，此处维度为2,
