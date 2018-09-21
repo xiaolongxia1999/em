@@ -5,6 +5,18 @@ from mopso.pareto import *
 
 #初始化例子， 得到例子的初始坐标——n个决策变量，则为n个坐标分量——此处是“随机化”,我们是根据历史数据，获取初始化的“历史可行解（淘汰掉被占优解，及劣解”
 # 本例中使用的是二维空间，x和y都是[0,10]的线性空间
+# def init_designparams(particles, in_min, in_max):
+#     #示例中in_dim=2
+#     in_dim = len(in_max)
+#     #particles = 100, in_temp = 100 * 2 的二维矩阵， 也即100个 二维向量（因为有两个决策变量）
+#     in_temp = np.zeros((particles, in_dim))
+#     for i in range(particles):
+#         for j in range(in_dim):
+#             # 初始化位置，生成100个粒子，每个粒子的坐标分量，都是服从0-1均匀分布的点————在我的例子中，应该是“历史可行解"中的非占优解集，作为初始种群
+#             in_temp[i, j] = random.uniform(0, 1) * (in_max[j] - in_min[j]) + in_min[j]
+#     return in_temp
+
+#@my_init_designparams————不需要随机生成，为初始的非占优解
 def init_designparams(particles, in_min, in_max):
     #示例中in_dim=2
     in_dim = len(in_max)

@@ -69,9 +69,10 @@ def compare_pbest(in_indiv, pbest_indiv):
             return False
 
 #@cl 更新“历史最优解pbest”——当前代的粒子，和上一代的pbest，作占优比较（就不用把所有的历史最优解作比较，因为每一次更新都和之前比较过）
-#@cl 核心conpare_best————
+#@cl 核心compare_best————
 #@cl 代码逻辑——如果当前粒子占优，则更新为当前粒子，否则还是以原pbest作为该轮p_best
 #@cl 此处维护了一个in_pbest和out_best的元组，各自均为一维向量，维护每一代中，各粒子的个体粒子引导者
+#@cl 此处fitness_输入是和”新一代”，而out_pbest是指上一代中的pbest————如果新一代fitness_未被占优，则更新，否则不更新，仍为上一代pbest
 def update_pbest(in_, fitness_, in_pbest, out_pbest):
     for i in range(out_pbest.shape[0]):
         if compare_pbest(fitness_[i], out_pbest[i]):

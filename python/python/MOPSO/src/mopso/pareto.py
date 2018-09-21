@@ -81,6 +81,6 @@ class  Pareto_:
             # print("judge")
             # print(self.cursor)
             if judge_(fitness_curr, self.fitness_data, self.cursor) == False:
-                print("remove:" + str(self.cursor))
+                # print("remove:" + str(self.cursor))
                 self.remove()
         return  self.in_data, self.fitness_data

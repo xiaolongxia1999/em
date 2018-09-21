@@ -25,17 +25,30 @@ class mesh_crowd(object):
 
     def cal_mesh_id(self, in_):
         id_ = 0
-        for i in range(self.curr_archiving_in.shape[1]):
+        print("curr_ar")
+        #不应该是curr_archiving_in的shape[1], 而应该是curr_archiving_fit的shape[1], 二者的shape[0]一定相同，但是shape[1]却不一样，前者是所有决策变量的个数，后者是目标函数个数
+        #而且：拥挤度，是根据目标空间的网格确定
+        # for i in range(self.curr_archiving_in.shape[1]):
+        for i in range(self.curr_archiving_fit.shape[1]):
             #明白这个意思了，这里以mesh_div为进制数，  假设mesh_div为10 ， 如果粒子是5维的，id = 13427， 则表示粒子所在网格的位置为（1,3,4,2,7），其中每个网格都被分成10等分，从小往大依次为1~10——其实这里只是记号，跟进制无关，只是解析id成坐标时，则需要
             #这里使用id计算，后面需要解析，这种id可以节省存储空间，很棒，但后面需要解析回来
-            id_dim = int((in_[i] - self.min_[i]) * self.num_ / (self.max_[i] - self.min_[i]))
+
+            #@warn， 此处网格好跟self.num_没关系，此处self.num_应替换为self.mesh_div,而且int没毛病，相当于地板函数，int(1.1)=1
+            #原代码如下——
+            # id_dim = int((in_[i] - self.min_[i]) * self.num_ / (self.max_[i] - self.min_[i]))
+            id_dim = int((in_[i] - self.min_[i]) * self.mesh_div / (self.max_[i] - self.min_[i]))
+
+            print("id_dim "+str(i)+"is"+str(id_dim))
             id_ = id_ + id_dim * (self.mesh_div ** i)
+            print(id_)
         return id_
 
     #计算粒子所在的网格id
     def divide_archiving(self):
         for i in range(self.num_):
-            self.id_archiving[i] = self.cal_mesh_id(self.curr_archiving_in[i])
+            #此处计算拥挤度和网格id，应该是根据“适应度函数”空间，而不是粒子位置的空间
+            # self.id_archiving[i] = self.cal_mesh_id(self.curr_archiving_in[i])
+            self.id_archiving[i] = self.cal_mesh_id(self.curr_archiving_fit[i])
 
     #计算拥挤度——即具有相同网格id(id_archving一样的粒子，处于同一网格）的粒子集合，他们对应的那个网格的拥挤度 = 其个数
     def get_crowd(self):
@@ -126,7 +139,8 @@ class clear_archiving(mesh_crowd):
     #@warn 修改 ——————增加了gbest_index属性，供其子类使用
     def __init__(self, curr_archiving_in, curr_archiving_fit, mesh_div_num, min_, max_, particles ):
         #@warn 修改——这里原来没有“位置参数”，故报错，我填充之：TypeError: __init__() missing 1 required positional argument: 'particles'
-        super(get_gbest, self).__init__(curr_archiving_in, curr_archiving_fit, mesh_div_num, min_, max_)
+        # super(get_gbest, self).__init__(curr_archiving_in, curr_archiving_fit, mesh_div_num, min_, max_)
+        super(clear_archiving, self).__init__(curr_archiving_in, curr_archiving_fit, mesh_div_num, min_, max_, particles)
         # super(clear_archiving, self).__init__(curr_archiving_in, curr_archiving_fit, mesh_div_num, min_, max_, particles)
         self.divide_archiving()
         self.get_crowd()

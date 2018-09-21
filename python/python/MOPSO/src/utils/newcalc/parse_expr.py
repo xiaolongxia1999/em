@@ -14,11 +14,11 @@ def compute_expr_df(expr, df):
     # print("expr is :" + str(expr))
     cols = df.columns
     # print("df columns is:" + str(cols))
-    return compute_expr_list(expr,cols)
+    return compute_expr_list(expr,cols, df)
 
 
 #仅传入表达式和一个“字段名”计算出新的一列————前提字段名必须是某个df的字段名
-def compute_expr_list(expr, column_list):
+def compute_expr_list(expr, column_list,df):
     # print("column_list is %s------------------------------------",column_list)
     # cols = df.columns
     for i in column_list:
@@ -32,19 +32,21 @@ def compute_expr_list(expr, column_list):
 
 # def calc_fitness_matrix:
 #输入DataFrame，计算fitness矩阵
-def calc_fitness_df(df_in, expr_list):
+def calc_fitness_df(df, expr_list):
     # print(df_in)
     # print("expr_list is:  "+str(expr_list))
     series_name_list = [("fitness_"+str(i+1)) for i in range(len(expr_list)) ]
     # print("series_name_list is-----------")
     # print(series_name_list)
-    new_df1 = pd.DataFrame(columns=series_name_list)
+    #@warn——此处必须为df，和后面的eval有关系，因为是按此df定义的
+    new_df = pd.DataFrame(columns=series_name_list)
     fitness_size = len(series_name_list)
+    print(df)
     # print("fitness_size is "+str(fitness_size))
     for i in range(fitness_size):
-        new_df1[series_name_list[i]] = compute_expr_df(expr_list[i], df_in)
+        new_df[series_name_list[i]] = compute_expr_df(expr_list[i], df)
     #返回DataFrame
-    return new_df1
+    return new_df
 
 def calc_fitness_out_ndarray(df_in, expr_list):
     return calc_fitness_df(df_in, expr_list).values
@@ -54,16 +56,21 @@ def calc_finess_nparry(nparray,expr_list, fields_set):
     fields_size = nparray.shape[1]
     # fields1 = ["field_".join(str(i)) for i in range(fields_size)]
     # df_from_nparry = pd.DataFrame(nparray,columns=fields1)
-    df_from_nparry = pd.DataFrame(nparray, columns=fields_set)
+    print("fields_set----------------------------------------")
+    print(fields_set)
+    print(nparray.shape)
+    df = pd.DataFrame(nparray, columns=fields_set)
+    print("df.columns----------------------------------------")
+    print(df.columns)
     #返回DataFrame
-    return calc_fitness_df(df_from_nparry, expr_list)
+    return calc_fitness_df(df, expr_list)
 
 #输入nparry,输出nparray形式的适应度矩阵
 #此处cols_list对应于所有“决策变量名”，是一个含所有“字段名”的列表————所以最好使用dataframe操作
 def calc_fitness_out_nparray(nparray,expr_list,fields_set):
-    new_df = calc_finess_nparry(nparray, expr_list,fields_set)
+    df = calc_finess_nparry(nparray, expr_list,fields_set)
     #返回ndarray
-    return new_df.values
+    return df.values
 
 
 def generate_df_from_fields(df, fields):
@@ -103,6 +110,19 @@ def get_fitness_expr():
         # weights = [random.uniform(0, 1) for i in range(len(key))]
         # #生成元组——————以key（比如'goal1'为键，防止后面目标与权重混淆
         # expr_list.append((key, calc_fitness_funtion(fields_temp, weights)))
+
+#根据json文件获取的字典和“拟合”获取的“权重”,获取计算表达式
+def get_expr_list(dict1, weights):
+    goals_indexes = dict1['goals_function']
+    for index in range(len(goals_indexes)):
+        #@warn：此处以后要修改，只是测试，简单使用线性回归，模拟
+        #目前是随机生成拟合“权重”，（0,1）之间——————————————用线性回归模拟拟合函数
+        # weights = [random.uniform(0, 1) for i in range(len(key))]
+        #@warn先写死weights，不然同一份数据，得到的Pareto解不一样！先全部取权重为1，即目标函数为自身相加
+        # weights = [1 for i in range(len(goals_indexes))]
+        fields_temp = dict1['goals_function'][index]['goal']['decision_variables']
+        expr_list.append(calc_fitness_funtion(fields_temp, weights))
+    return expr_list
 
 
 
@@ -162,27 +182,60 @@ if __name__ == "__main__":
 
     #Pareto之fitness矩阵—ndarray
     # array_fitness_in =
-    #读取conf/fitness.json
-    file_path = os.path.abspath(os.path.join(os.getcwd(), "../../../conf")) +os.sep+ "fitness.json"
-    # file_path = os.path.join(os.path.dirname(__file__) , '/../../../conf/fitness.json')
-    print(file_path)
+
+
+    # #读取conf/fitness.json,是无序的， 得到的fitness函数和用户在json中输入的顺序不一致
+    # file_path = os.path.abspath(os.path.join(os.getcwd(), "../../../conf")) +os.sep+ "fitness.json"
+    # # file_path = os.path.join(os.path.dirname(__file__) , '/../../../conf/fitness.json')
+    # print(file_path)
+    # f = open(file_path,"r")
+    # params = json.load(f)
+    # print(params)
+    #
+    # #生成expr_list
+    # expr_list = []
+    # goals_keys = params['goals_function'].keys()
+    # print("goals_keys")
+    # #fitness矩阵产生
+    # for key in goals_keys:
+    #     #@warn：此处以后要修改，只是测试，简单使用线性回归，模拟
+    #     #目前是随机生成拟合“权重”，（0,1）之间——————————————用线性回归模拟拟合函数
+    #     # weights = [random.uniform(0, 1) for i in range(len(key))]
+    #     #@warn先写死weights，不然同一份数据，得到的Pareto解不一样！先全部取权重为1，即目标函数为自身相加
+    #     weights = [1 for i in range(len(key))]
+    #     # print(type(goals_keys))
+    #     #需要用json的多层键去获取“嵌套字典的值”
+    #
+    #     fields_temp = params['goals_function'][key]['decision_variables']
+    #     expr_list.append(calc_fitness_funtion(fields_temp, weights))
+
+
+    #读取conf/fitness_list.json————————此处是有序的，因为是列表，得到的fitness是按用户输入的顺序获取的
+    file_path = os.path.abspath(os.path.join(os.getcwd(), "../../../conf")) +os.sep+ "fitness_list.json"
     f = open(file_path,"r")
     params = json.load(f)
     print(params)
 
     #生成expr_list
     expr_list = []
-    goals_keys = params['goals_function'].keys()
+    goals_indexes = params['goals_function']
     print("goals_keys")
     #fitness矩阵产生
-    for key in goals_keys:
+    for index in range(len(goals_indexes)):
         #@warn：此处以后要修改，只是测试，简单使用线性回归，模拟
         #目前是随机生成拟合“权重”，（0,1）之间——————————————用线性回归模拟拟合函数
-        weights = [random.uniform(0, 1) for i in range(len(key))]
-        # print(type(goals_keys))
-        #需要用json的多层键去获取“嵌套字典的值”
-        fields_temp = params['goals_function'][key]['decision_variables']
+        # weights = [random.uniform(0, 1) for i in range(len(key))]
+        #@warn先写死weights，不然同一份数据，得到的Pareto解不一样！先全部取权重为1，即目标函数为自身相加
+        # weights = [1 for i in range(len(goals_indexes))]
+
+
+        fields_temp = params['goals_function'][index]['goal']['decision_variables']
+        weights = [1 for i in range(len(fields_temp))]
+
+        print(fields_temp)
         expr_list.append(calc_fitness_funtion(fields_temp, weights))
+
+
 
     #利用expr_list和df，生成fitness矩阵，一个ndarray
     print("expr_list is-----------------------------------")

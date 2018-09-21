@@ -1,7 +1,11 @@
 # 编写适应度函数，以数组传入
 import numpy as np
 import pandas as pd
+import os
 import re
+
+from utils.config.config import Config
+from utils.newcalc.parse_expr import *
 # 适应度函数
 # 此处是2个目标，即2个适应度函数
 
@@ -22,9 +26,15 @@ def fitness_(in_):
     return  [fit_1, fit_2]
 
 
+def my_fitness(in_, expr_list, fields_set):
+    print("fields_set------------------------------")
+    print(fields_set)
+    array_result = calc_fitness_out_nparray(in_, expr_list, fields_set)
+    return array_result
 
 
 
+#---以上为我的适应度函数，根据用户传入的表达式和输入数据计算所得（通过解析表达式的方法）
 
 
 
@@ -61,7 +71,7 @@ def parse_expr(expr="", one_set=set() ):
 
     for i in one_set:
         if expr.find(i) == -1:
-            pass
+            continue
         else:
             #将发现的字符串全部替换为df[字符串]
             expr = expr.replace(i, "df[\"" + i + "\"]")
@@ -150,8 +160,6 @@ def expr_transform1(expr, df_name):
 
 
 
-def read_data(path_):
-    pass
 
 #eval——————字符串转成计算表达式，只要是变量均可——见eval用法：http://www.runoob.com/python/python-func-eval.html
 def eval_expr(expr,old,new,dataframe):
@@ -218,34 +226,38 @@ def eval_expr(expr,old,new,dataframe):
 # print(operator("1","2","-"))
 # print(a3)
 
-# print(eval(a1))
-path = r'E:\bonc\工业第四期需求\数据\out\去除负9和0等异常值的DF0904.csv'
-df = pd.read_csv(path, header=0)
-fields = df.columns
-
-#将表达式中的
-old = "CZ3-"
-new = "CZ@"
-expr_a = "CZ3-FC7007/CZ3-FC7002*100"
-#先把字段名转正确
-# df的字段名也替换成不含运算符 的字段名
-df.columns = replace_new_with_list(fields, old, new)
-# expr = parse_expr(expr, fields)
-
-# print(expr_transform1(expr, "df"))
-# new_expr = "".join(expr_transform1(expr, "df"))
-# print(new_expr)
 
 
-print("good--------------")
-new_array1 = eval_expr(expr_a,old,new,df)
-print(new_array1)
-print("done---------------")
 
-# df[df['goal1']] = df[expr]
-# print(df)
 #
-# df1 = df[expr]
-# print(df1)
+# # print(eval(a1))
+# path = r'E:\bonc\工业第四期需求\数据\out\去除负9和0等异常值的DF0904.csv'
+# df = pd.read_csv(path, header=0)
+# fields = df.columns
+#
+# #将表达式中的
+# old = "CZ3-"
+# new = "CZ@"
+# expr_a = "CZ3-FC7007/CZ3-FC7002*100"
+# #先把字段名转正确
+# # df的字段名也替换成不含运算符 的字段名
+# df.columns = replace_new_with_list(fields, old, new)
+# # expr = parse_expr(expr, fields)
+#
+# # print(expr_transform1(expr, "df"))
+# # new_expr = "".join(expr_transform1(expr, "df"))
+# # print(new_expr)
+#
+#
+# print("good--------------")
+# new_array1 = eval_expr(expr_a,old,new,df)
+# print(new_array1)
+# print("done---------------")
+#
+# # df[df['goal1']] = df[expr]
+# # print(df)
+# #
+# # df1 = df[expr]
+# # print(df1)
 
 
