@@ -10,16 +10,25 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library>
+        <ANNOTATIONS>
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
+        </ANNOTATIONS>
         <CLASSES>
-          <root url="file://D:/Anaconda3/Lib" />
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
+        </JAVADOC>
         <NATIVE>
-          <root url="file://D:/Anaconda3/Lib/site-packages" />
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
         </NATIVE>
         <SOURCES>
-          <root url="file://D:/Anaconda3/Lib" />
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
+          <root url="file://D:/Anaconda3/Lib/site-packages/py4j" />
         </SOURCES>
+        <jarDirectory url="file://D:/Anaconda3/Lib/site-packages/py4j" recursive="false" />
+        <jarDirectory url="file://D:/Anaconda3/Lib/site-packages/py4j" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
   </component>

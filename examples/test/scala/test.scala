@@ -1,4 +1,7 @@
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
 import udaf.myAggregator
+import org.apache.spark.sql.functions._
 
 /**
   * Created by Administrator on 2018/9/7 0007.
@@ -33,10 +36,29 @@ object test2 {
 
   def main(args: Array[String]): Unit = {
 
-    val test1 = new test()
-    val test3 = new test("df")
+    val conf = new SparkConf().setMaster("local[*]").setAppName("ff")
+    val spark = SparkSession.builder.config(conf).getOrCreate()
+//    val path = "C:\\Users\\Administrator\\Desktop\\数慧空间国际化翻译-成亮.csv"
+//
+//    val rdd = spark.sparkContext.textFile(path)
+//    val rdd1 = rdd.map(x => x.split(",").filterNot(y => y.isEmpty).mkString(","))
+//
+//    rdd1.coalesce(1).saveAsTextFile("C:\\Users\\Administrator\\Desktop\\cl.csv")
 
+    var df = spark.read.option("header", false).csv("C:\\Users\\Administrator\\Desktop\\国际化cl.csv").toDF("f1","f2")
+    df.show()
 
-    println("dj")
+    def upperCaseFirst(str:String):String = {
+      val str1 = str.toLowerCase()
+      val str2 = (str1.charAt(0).toInt - 32).toChar + str1.drop(1)
+      str2
+    }
+    val upperCaseFirst1:(String=> String) = upperCaseFirst
+
+    val firstUpper = udf(upperCaseFirst1 )
+
+    df = df.withColumn("f3" , firstUpper(col("f2")))
+    df.show()
+
   }
 }

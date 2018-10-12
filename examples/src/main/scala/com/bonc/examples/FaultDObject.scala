@@ -6,6 +6,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.io.Source
+import util.control.Breaks._
 
 object FaultDObject {
   Logger.getLogger("org").setLevel(Level.ERROR)
@@ -15,7 +16,16 @@ object FaultDObject {
   def main(args: Array[String]): Unit = {
 
 
-//
+    for(i<-0 until 10) {
+      breakable {
+        if (i == 3 || i == 6) {
+          break
+        }
+        println(i)
+      }
+    }
+
+      //
 //
 //    val FaultD = new FaultD
 ////    val filePath = args(0)

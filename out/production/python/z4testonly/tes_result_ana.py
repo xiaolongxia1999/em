@@ -6,15 +6,19 @@ import os
 def new_df(path1, path2):
     arr1 = np.loadtxt(path1, dtype=np.float32)
     arr2 = np.loadtxt(path2, dtype=np.float32)
-
+    print(arr1.shape[1])
+    print(arr2.shape[1])
     size1 = arr1.shape[0]
     size2 = arr2.shape[0]
     fields_size = arr1.shape[1]
 
     new_arr = np.vstack((arr1,arr2))
 
-    id_arr = np.arange(size1 + size2)
+    #由于new_arr也必须是2维（在stack时，两个数组的维度必须一致）的，因此id_arr要reshape一下，reshape(-1,1)表示：指定axis=1的长度为1，即1列，行数自动计算
+    id_arr = np.arange(size1 + size2).reshape(-1,1)
 
+    print(id_arr.shape[0])
+    print(new_arr.shape[0])
     new_arr_with_id = np.hstack((id_arr,new_arr))
 
     new_columns = []
@@ -33,7 +37,9 @@ if __name__ == '__main__':
     # print(df)
     path1 = os.path.abspath(os.path.join(os.getcwd(), "../mopso/img_txt")) + os.sep + "pareto_fitness.txt"
     path2 = os.path.abspath(os.path.join(os.getcwd(), "../mopso/img_txt")) + os.sep + "first_pareto_fitness0919.txt"
-    df = new_df(path1, path2)[2]
+    df_info = new_df(path1, path2)
+    size1 = df_info[0]
+    df =df_info[2]
 
 
     fit_in, fitness_in = (df.iloc[:,0:1].values, df.iloc[:,1:].values)
@@ -45,10 +51,13 @@ if __name__ == '__main__':
     print(new_fit)
     print("shape")
     print(new_fit.shape)
+    print(new_fitness.shape)
 
-    theory_result_size = fit_in[fit_in < df[0]]
-    histort_result_size = fit_in [ fit_in.shape[0] - theory_result_size]
+    fit_in = fit_in.reshape(-1)
+    theory_result_size = new_fit[new_fit < size1].size
+    histort_result_size = new_fit.size - theory_result_size
 
+    print("理论最优解总数:%d" %new_fitness.shape[0])
     print("理论最优解最终未被历史最优解占优个数:%d" %theory_result_size)
     print("历史最优解最终未被理论最优解占优个数:%d" %histort_result_size)
 

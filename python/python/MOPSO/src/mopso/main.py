@@ -1,3 +1,9 @@
+
+#(!) -*- coding: utf-8 -*-
+import sys
+sys.path.append("D:\\Anaconda3\\Lib\\site-packages")
+#需要添加当前mopso所在的父目录为路径，python里面可以跑
+sys.path.append("E:\IdeaWorkSpace\EnergyManagement4\EnergyManagement\python\python\MOPSO\src")
 import  numpy as np
 from mopso.mopsoC import  *
 from utils.config import config
@@ -18,20 +24,30 @@ def main():
 
     # @cl调整参数，测试
     w  = 0.8
-    c1 = 0.3
-    c2 = 0.3
+    c1 = 0.05
+    c2 = 0.05
 
     # particles = 100
-    cycle_ = 100
+    cycle_ = 2
     mesh_div = 10           #网格参数，线性空间10等分
     thresh = 300            #外部储备集阀值，最多保留300个非占优解
     # min_ = np.array([0, 0])             #min_是n维线性空间的下界，此处维度为2,
     # max_ = np.array([10, 10])           #max_是其上界，此处维度为2
 
+    #原获取路径方式
+    # data_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "dataset.csv"
+    # json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) + os.sep + "fitness_list.json"
+    # save_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "model"
 
-    data_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "dataset.csv"
-    json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) + os.sep + "fitness_list.json"
+    #新获取路径方式，java调用
+    #python获取绝对路径: https://blog.csdn.net/junbujianwpl/article/details/75332141
+    script_path = os.path.abspath(sys.argv[0])
+    data_path = os.path.abspath(os.path.join(script_path, "../../../data")) + os.sep + "dataset.csv"
 
+    print(data_path)
+    json_path = os.path.abspath(os.path.join(script_path, "../../../conf")) + os.sep + "fitness_list.json"
+
+    save_path = os.path.abspath(os.path.join(script_path, "../../../data")) + os.sep + "model"
 
     #读取data
     # json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) +os.sep+ "fitness_list.json"
@@ -42,6 +58,7 @@ def main():
 
     #加载json和data
     conf = load_conf(data_path,json_path)
+
     # #初始定一个无意义的边界，主要是为了调用evaluation_fitness()方法
     # min_ = np.arange(len(conf.goal_info))
     # max_ = np.arange(len(conf.goal_info))
@@ -51,7 +68,9 @@ def main():
     min_, max_, fit_in_origin, fitness_in_origin  = get_bounds(conf)
     #初始进行一次Pareto，加快搜索速度
     fit_in, fitness_in = Pareto_(fit_in_origin, fitness_in_origin).pareto()
-    np.savetxt("./img_txt/first_pareto_fitness0919.txt", fitness_in)
+    #使用绝对路径
+    np.savetxt(os.path.abspath(os.path.join(script_path, "../img_txt")) + os.sep + "first_pareto_fitness0919.txt", fitness_in)
+    # np.savetxt("./img_txt/first_pareto_fitness0919.txt", fitness_in)
     #粒子个数：按照最初的pareto解得到的粒子个数为准
     particles = fit_in.shape[0]
 
@@ -59,6 +78,15 @@ def main():
 
     # pareto_in, pareto_fitness = mopso_.done(cycle_)
     pareto_in, pareto_fitness = mopso_1.done(cycle_)
+
+    #序列化
+    print("save model-------------------------------")
+    mopso_1.save(save_path)
+    print("load model-------------------------------")
+    abc = mopso_1.load(save_path)
+    # print(abc[0])
+
+
     np.savetxt("./img_txt/pareto_in.txt", pareto_in)
     np.savetxt("./img_txt/pareto_fitness.txt", pareto_fitness)
     print("done------------------------")
