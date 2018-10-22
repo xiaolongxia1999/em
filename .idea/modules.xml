@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/energymanagement.iml" filepath="$PROJECT_DIR$/energymanagement.iml" />
-      <module fileurl="file://$PROJECT_DIR$/python/python/python.iml" filepath="$PROJECT_DIR$/python/python/python.iml" />
     </modules>
   </component>
 </project>

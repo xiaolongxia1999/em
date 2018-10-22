@@ -34,16 +34,20 @@ def main():
     # min_ = np.array([0, 0])             #min_是n维线性空间的下界，此处维度为2,
     # max_ = np.array([10, 10])           #max_是其上界，此处维度为2
 
+    #原获取路径方式
     # data_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "dataset.csv"
+    # json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) + os.sep + "fitness_list.json"
+    # save_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "model"
 
+    #新获取路径方式，java调用
     #python获取绝对路径: https://blog.csdn.net/junbujianwpl/article/details/75332141
     script_path = os.path.abspath(sys.argv[0])
-    data_path = script_path + "../../data" + os.sep + "dataset.csv"
+    data_path = os.path.abspath(os.path.join(script_path, "../../../data")) + os.sep + "dataset.csv"
 
     print(data_path)
-    json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) + os.sep + "fitness_list.json"
+    json_path = os.path.abspath(os.path.join(script_path, "../../../conf")) + os.sep + "fitness_list.json"
 
-    save_path = os.path.abspath(os.path.join(os.getcwd(), "../../data")) + os.sep + "model"
+    save_path = os.path.abspath(os.path.join(script_path, "../../../data")) + os.sep + "model"
 
     #读取data
     # json_path = os.path.abspath(os.path.join(os.getcwd(), "../../conf")) +os.sep+ "fitness_list.json"
@@ -64,7 +68,9 @@ def main():
     min_, max_, fit_in_origin, fitness_in_origin  = get_bounds(conf)
     #初始进行一次Pareto，加快搜索速度
     fit_in, fitness_in = Pareto_(fit_in_origin, fitness_in_origin).pareto()
-    np.savetxt("./img_txt/first_pareto_fitness0919.txt", fitness_in)
+    #使用绝对路径
+    np.savetxt(os.path.abspath(os.path.join(script_path, "../img_txt")) + os.sep + "first_pareto_fitness0919.txt", fitness_in)
+    # np.savetxt("./img_txt/first_pareto_fitness0919.txt", fitness_in)
     #粒子个数：按照最初的pareto解得到的粒子个数为准
     particles = fit_in.shape[0]
 

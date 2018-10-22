@@ -121,7 +121,10 @@ class MutipleObjectiveOptimizeAnalysis[T] extends IModel[T with Object] with Ser
 
 //@warn 测试时版本已经替换为2.2.0
 //@深刻教训，命名时，不要用“—”，“_”这种符号，严格按照字母命名，在spark sql里，容易出错，尤其是用expressions时
-object MutipleObjectiveOptimizeAnalysis {
+
+
+
+object MutipleObjectiveOptimizeAnalysis{
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setMaster("local[*]").setAppName("MOEA")
@@ -140,6 +143,8 @@ object MutipleObjectiveOptimizeAnalysis {
     for(column<-inputData.columns) {
       inputData = inputData.withColumn(column, col(column).cast(DoubleType))
     }
+
+
 
     //防止后面对数化报错，之前fill("0")
     //DataFrameNaFunctions的三个功能：填充、替换、删除

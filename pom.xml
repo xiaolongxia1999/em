@@ -22,6 +22,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--<spark_version>2.1.0</spark_version>-->
     <spark_version>2.2.0</spark_version>
+    <hadoop_version>2.7.3</hadoop_version>
     <jdbc_mysql_version>5.1.21</jdbc_mysql_version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -33,7 +34,7 @@
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <version>2.4</version>
-      <!--<scope>provided</scope>-->
+      <scope>provided</scope>
     </dependency>
 
 <!--spark相关-->
@@ -68,6 +69,13 @@
 
     <dependency>
       <groupId>org.apache.spark</groupId>
+      <artifactId>spark-yarn_2.11</artifactId>
+      <version>2.2.0</version>
+      <!--<scope>provided</scope>-->
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_2.11</artifactId>
       <version>${spark_version}</version>
       <!--<scope>provided</scope>-->
@@ -77,11 +85,26 @@
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
-      <version>2.1.0</version>
+      <version>${spark_version}</version>
       <scope>provided</scope>
     </dependency>
 
 
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <!--<scope>test</scope>-->
+      <version>${hadoop_version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <!--<scope>test</scope>-->
+      <version>${hadoop_version}</version>
+      <scope>provided</scope>
+    </dependency>
 
 
 
@@ -184,6 +207,31 @@
           <version>2.8.2</version>
         </plugin>
 
+          <!--scala code style , spelling check-->
+          <plugin>
+              <groupId>org.scalastyle</groupId>
+              <artifactId>scalastyle-maven-plugin</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                  <verbose>false</verbose>
+                  <failOnViolation>true</failOnViolation>
+                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                  <failOnWarning>false</failOnWarning>
+                  <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
+                  <testSourceDirectory>${project.basedir}/src/test/scala</testSourceDirectory>
+                  <configLocation>${project.basedir}/lib/scalastyle_config.xml</configLocation>
+                  <outputFile>${project.basedir}/scalastyle-output.xml</outputFile>
+                  <outputEncoding>UTF-8</outputEncoding>
+              </configuration>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+
         <!-- 拷贝依赖的jar包到jars目录 -->
         <!--见：https://blog.csdn.net/sunjiaminaini/article/details/77897093-->
         <plugin>
@@ -206,6 +254,19 @@
           </executions>
         </plugin>
 
+        <plugin>
+          <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+          <version>2.15.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

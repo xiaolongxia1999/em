@@ -1,0 +1,17 @@
+{
+    "goals_function": [
+        {"goal": {
+            "decision_variables": [
+                "CZ3-FC7002",
+                "CZ3-TI7001",
+                "CZ3-TI7003",
+                "CZ3-TI7005",
+                "CZ3-TI7007"
+            ],
+            "expr": "CZ3-FC7007/CZ3-FC7002*100",
+            "id":1
+        }}
+     ],
+    "optimizeRatio":0.2
+
+}

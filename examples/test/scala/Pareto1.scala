@@ -1,3 +1,6 @@
+
+
+import com.bonc.models.Pareto
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
@@ -61,7 +64,7 @@ object Pareto1 {
 //    val data_path = "E:\\IdeaWorkSpace\\EnergyManagement4\\EnergyManagement\\python\\python\\MOPSO\\data\\dataset.csv"
     val data_path = "E:\\bonc\\工业第四期需求\\数据\\out\\16决策和4目标变量0927.csv"
 
-    val conf = new SparkConf().setAppName("pareto").setMaster("local[*]")
+    val conf = new SparkConf().setAppName("pareto").setMaster("local[1]")
     val spark = SparkSession.builder().config(conf).getOrCreate()
 
     var df = spark.read.option("header",true).option("inferSchema",true).format("csv").load(data_path)
@@ -84,7 +87,7 @@ object Pareto1 {
 //    val rdd1 = rdd.aggregate()
 
     val rdd1 = rdd.mapPartitions[Row]( iter =>{
-      val obj = new Pareto(iter.toArray)
+      val obj = new Pareto(iter.toArray,0)
       obj.pareto().toIterator
     })
 
@@ -112,3 +115,4 @@ object Pareto1 {
   }
 
 }
+

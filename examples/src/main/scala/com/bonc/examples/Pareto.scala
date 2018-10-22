@@ -16,9 +16,12 @@ import org.apache.spark.sql.functions._
 //}
 
 object Pareto {
+
+
   def main(args: Array[String]): Unit = {
     val dataPath = "D:\\pycharm\\PycharmProjects\\MOPSO\\data\\dataset.csv"
     val jsonPath = ""
+
 
     val conf = new SparkConf().setMaster("local[*]").setAppName("Pareto")
     val spark = SparkSession.builder().config(conf).getOrCreate()
@@ -31,5 +34,7 @@ object Pareto {
 
     df = df.withColumn("particles_id", row_number().over(Window.orderBy(df.columns(0))))
     df.show()
+
+
   }
 }

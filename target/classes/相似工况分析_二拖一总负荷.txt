@@ -1,1 +1,0 @@
-{'labelCol':'二拖一总负荷','observedCol':['GT2发电机功率','GT1发电机功率','汽机功率'],'selfClassify':'1','workcond_tolnum':18,'bias':[30,30,30],'compute_model':1,'selfFeaturing':1,'contrib_rate':0.8}

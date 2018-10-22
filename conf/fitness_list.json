@@ -43,6 +43,13 @@
             "id":4
         }}
      ],
-    "optimize_ratio":0.2
+    "optimizeRatio":0.0,
+    "inputColumns":"CZ3-TI7003,CZ3-FI7020,CZ3-TI7041,CZ3-TI7001,CZ3-TI7005,CZ3-PI7101,CZ3-FC7002,CZ3-TI7043,CZ3-PI7008,CZ3-FI7017,CZ3-FI7019,CZ3-TI7007,CZ3-FI7018,CZ3-FC7007,CZ3-FIC7009,CZ3-FI7006",
+    "w":0.8,
+    "c1":1.49,
+    "c2":1.49,
+    "maxIter":100,
+    "meshDiv":10,
+    "thresh":2000
 
 }

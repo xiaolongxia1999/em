@@ -1,0 +1,536 @@
+<?xml version="1.0"?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. See accompanying LICENSE file.
+-->
+
+<configuration>
+
+<property>
+   <name>yarn.nodemanager.aux-services</name>
+   <value>mapreduce_shuffle</value>
+   <final>false</final>
+</property> 
+
+<property>
+   <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+   <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.cluster-id</name>
+   <value>beh</value>
+   <final>false</final>
+</property>  
+
+<property>
+   <name>yarn.resourcemanager.ha.rm-ids</name>
+   <value>rm1,rm2</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.webapp.address.rm1</name>
+   <value>hadoop01:23188</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.webapp.https.address.rm1</name>
+   <value>hadoop01:23189</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
+   <value>hadoop01:23125</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.scheduler.address.rm1</name>
+   <value>hadoop01:23130</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.address.rm1</name>
+   <value>hadoop01:23140</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.admin.address.rm1</name>
+   <value>hadoop01:23141</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.webapp.address.rm2</name>
+   <value>hadoop02:23188</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.webapp.https.address.rm2</name>
+   <value>hadoop02:23189</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
+   <value>hadoop02:23125</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.scheduler.address.rm2</name>
+   <value>hadoop02:23130</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.address.rm2</name>
+   <value>hadoop02:23140</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.admin.address.rm2</name>
+   <value>hadoop02:23141</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.address</name>
+   <value>0.0.0.0:23998</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.webapp.address</name>
+   <value>0.0.0.0:23999</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>mapreduce.shuffle.port</name>
+   <value>23080</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.ha.enabled</name>
+   <value>true</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
+   <value>true</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.recovery.enabled</name>
+   <value>true</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.recovery.enabled</name>
+   <value>true</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.recovery.dir</name>
+   <value>/mnt/sd01/data/yarn/yarn-nm-recovery</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.connect.retry-interval.ms</name>
+   <value>2000</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.zk-address</name>
+   <value>hadoop03:2181,hadoop04:2181,hadoop05:2181</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.zk.state-store.address</name>
+   <value>hadoop03:2181,hadoop04:2181,hadoop05:2181</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.store.class</name>
+   <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.local-dirs</name>
+   <value>/mnt/sd01/data/yarn/local,/mnt/sd02/data/yarn/local,/mnt/sd03/data/yarn/local,/mnt/sd04/data/yarn/local</value>
+   <final>false</final>
+</property> 
+
+
+<!--Compute Resource Setting Start-->
+<property>
+   <name>yarn.nodemanager.resource.memory-mb</name>
+   <value>163840</value>
+   <final>false</final>
+   <description>Amount of physical memory, in MB, that can be allocated for containers.Default:8192</description>
+</property>
+
+<property>
+   <name>yarn.scheduler.increment-allocation-mb</name>
+   <value>200</value>
+</property>
+
+<property>
+   <name>yarn.scheduler.minimum-allocation-mb</name>
+   <value>1024</value>
+   <description>The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this will throw a InvalidResourceRequestException.Default:1024</description>
+</property>
+
+<property>
+   <name>yarn.scheduler.maximum-allocation-mb</name>
+   <value>8192</value>
+   <description>The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this will throw a InvalidResourceRequestException.Default:8192</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.resource.cpu-vcores</name>
+   <value>50</value>
+   <final>false</final>
+   <description>Number of vcores that can be allocated for containers. This is used by the RM scheduler when allocating resources for containers. This is not used to limit the number o physical cores used by YARN containers.Default:8</description>
+</property>
+
+<property>
+   <name>yarn.scheduler.minimum-allocation-vcores</name>
+   <value>1</value>
+   <final>false</final>
+   <description>The minimum allocation for every container request at the RM, in terms of virtual CPU cores. Requests lower than this will throw a InvalidResourceRequestException.Default:1</description>
+</property>
+
+<property>
+   <name>yarn.scheduler.maximum-allocation-vcores</name>
+   <value>4</value>
+   <final>false</final>
+   <description>The maximum allocation for every container request at the RM, in terms of virtual CPU cores. Requests higher than this will throw a InvalidResourceRequestException.Default:32</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.vmem-pmem-ratio</name>
+   <value>2.1</value>
+   <description>Ratio between virtual memory to physical memory when setting memory limits for containers. Container allocations are expressed in terms of physical memory, and virtual memory usage is allowed to exceed this allocation by this ratio.Default:2.1</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.pmem-check-enabled</name>
+   <value>true</value>
+   <description>Whether physical memory limits will be enforced for containers.</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.vmem-check-enabled</name>
+   <value>false</value>
+   <description>Whether virtual memory limits will be enforced for containers.</description>
+</property>
+
+<!--Compute Resource Setting End-->
+
+<!--Uber Mode Start-->
+<property>
+   <name>mapreduce.job.ubertask.enable</name>
+   <value>true</value>
+   <description>Whether to enable the small-jobs "ubertask" optimization, which runs "sufficiently small" jobs sequentially within a single JVM. "Small" is defined by the following maxmaps, maxreduces, and maxbytes settings. Note that configurations for application masters also affect the "Small" definition - yarn.app.mapreduce.am.resource.mb must be larger than both mapreduce.map.memory.mb and mapreduce.reduce.memory.mb, and yarn.app.mapreduce.am.resource.cpu-vcores must be larger than both mapreduce.map.cpu.vcores and mapreduce.reduce.cpu.vcores to enable ubertask. Users may override this value.
+   </description>
+</property>
+   
+<property>
+   <name>mapreduce.job.ubertask.maxmaps</name>
+   <value>9</value>
+   <description>Threshold for number of maps, beyond which job is considered too big for the ubertasking optimization. Users may override this value, but only downward.</description>
+</property>
+
+<property>
+   <name>mapreduce.job.ubertask.maxreduces</name>
+   <value>1</value>
+   <description>Threshold for number of reduces, beyond which job is considered too big for the ubertasking optimization. CURRENTLY THE CODE CANNOT SUPPORT MORE THAN ONE REDUCE and will ignore larger values. (Zero is a valid max, however.) Users may override this value, but only downward.</description>
+</property>
+
+<property>
+   <name>mapreduce.job.ubertask.maxbytes</name>
+   <value>134217728</value>
+   <description>Threshold for number of input bytes, beyond which job is considered too big for the ubertasking optimization. If no value is specified, dfs.block.size is used as a default. Be sure to specify a default value in mapred-site.xml if the underlying filesystem is not HDFS. Users may override this value, but only downward.</description>
+</property>
+
+<property>
+   <name>yarn.app.mapreduce.am.env</name>
+   <value>LD_LIBRARY_PATH=$HADOOP_HOME/lib/native</value>
+</property>
+<!--Uber Mode Stop-->
+
+<property>
+   <name>yarn.nodemanager.log-dirs</name>
+   <value>/opt/beh/logs/yarn/userlogs</value>
+   <final>false</final>
+</property>
+
+<!--LOG Aggregation Start-->
+<property>
+   <name>yarn.log-aggregation-enable</name>
+   <value>true</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.localizer.address</name>
+   <value>0.0.0.0:23344</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.remote-app-log-dir</name>
+   <value>hdfs://beh/var/log/hadoop-yarn/apps</value>
+   <final>false</final>
+</property>
+
+
+<property>
+   <name>yarn.log-aggregation.retain-seconds</name>
+   <value>2592000</value>
+   <final>false</final>
+</property>
+
+
+<property>
+   <name>yarn.log-aggregation.retain-check-interval-seconds</name>
+   <value>3600</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.nodemanager.log-aggregation.compression-type</name>
+   <value>none</value>
+</property>
+
+<!--LOG Aggregation End-->
+
+<property>
+   <name>yarn.resourcemanager.scheduler.class</name>
+   <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+   <description>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler</description>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.app.mapreduce.am.scheduler.connection.wait.interval-ms</name>
+   <value>5000</value>
+   <final>false</final>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.resource-tracker.client.thread-count</name>
+   <value>50</value>
+   <final>false</final>
+   <description>Number of threads to handle resource tracker calls.default:50</description>
+</property>
+
+<property>
+   <name>yarn.resourcemanager.scheduler.client.thread-count</name>
+   <value>50</value>
+   <final>false</final>
+   <description>Number of threads to handle scheduler interface.default:50</description>
+</property>
+
+<!--Disk Health Checker Start-->
+
+<property>
+   <name>yarn.nodemanager.disk-health-checker.min-healthy-disks</name>
+   <value>0.25</value>
+   <description>The minimum fraction of number of disks to be healthy for the nodemanager to launch new containers. This correspond to both yarn-nodemanager.local-dirs and yarn.nodemanager.log-dirs. i.e. If there are less number of healthy local-dirs (or log-dirs) available, then new containers will not be launched on this node.Default:0.25</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage</name>
+   <value>90.0</value>
+   <description>The maximum percentage of disk space utilization allowed after which a disk is marked as bad. Values can range from 0.0 to 100.0. If the value is greater than or equal to 100, the nodemanager will check for full disk. This applies to yarn-nodemanager.local-dirs and yarn.nodemanager.log-dirs.Default:90.0</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.disk-health-checker.min-free-space-per-disk-mb</name>
+   <value>1024</value>
+   <description>The minimum space that must be available on a disk for it to be used. This applies to yarn-nodemanager.local-dirs and yarn.nodemanager.log-dirs.Default:0</description>
+</property>
+
+<!--Disk Health Checker End-->
+
+<!--Debug Delay Start-->
+<property>
+   <name>yarn.nodemanager.delete.debug-delay-sec</name>
+   <value>0</value>
+   <description>Number of seconds after an application finishes before the nodemanager's DeletionService will delete the application's localized file directory and log directory. To diagnose Yarn application problems, set this property's value large enough (for example, to 600 = 10 minutes) to permit examination of these directories. After changing the property's value, you must restart the nodemanager in order for it to have an effect. The roots of Yarn applications' work directories is configurable with the yarn.nodemanager.local-dirs property (see below), and the roots of the Yarn applications' log directories is configurable with the yarn.nodemanager.log-dirs property (see also below).Default:0</description>
+</property>
+<!--Debug Delay End-->
+
+
+<!--Health Checker Start-->
+<property>
+   <name>yarn.nodemanager.health-checker.interval-ms</name>
+   <value>60000</value>
+   <description>Frequency of running node health script.Default:60000</description>
+</property>
+
+<property>
+   <name>yarn.nodemanager.health-checker.script.timeout-ms</name>
+   <value>60000</value>
+   <description>Script time out period.Default:120000</description>
+</property>
+<!--Health Checker End-->
+
+<!--YARN Timeline Server Start-->
+
+<property>
+   <name>yarn.timeline-service.enabled</name>
+   <value>true</value>
+</property>
+
+<property>
+  <description>The hostname of the Timeline service web application.</description>
+  <name>yarn.timeline-service.hostname</name>
+  <value>hadoop01</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.address</name>
+   <value>hadoop01:10200</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.webapp.address</name>
+   <value>hadoop01:8188</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.webapp.https.address</name>
+   <value>hadoop01:8190</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.ttl-enable</name>
+   <value>true</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.ttl-ms</name>
+   <value>2678400000</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.store-class</name>
+   <value>org.apache.hadoop.yarn.server.timeline.LeveldbTimelineStore</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.leveldb-timeline-store.ttl-interval-ms</name>
+   <value>300000</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.leveldb-timeline-store.path</name>
+   <value>/opt/beh/data/yarn/timeline</value>
+</property>
+
+<property>
+   <name>yarn.timeline-service.generic-application-history.enabled</name>
+   <value>true</value>
+</property>
+
+
+<property>
+   <name>yarn.timeline-service.generic-application-history.store-class</name>
+   <value>org.apache.hadoop.yarn.server.applicationhistoryservice.NullApplicationHistoryStore</value>
+</property>
+
+<property>
+   <description>Handler thread count to serve the client RPC requests.</description>
+   <name>yarn.timeline-service.handler-thread-count</name>
+   <value>10</value>
+</property>
+
+
+<property>
+  <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
+  <value>true</value>
+</property>
+
+<property>
+  <description>Enables cross-origin support (CORS) for web services wherecross-origin web response headers are needed. For example, javascript making a web services request to the timeline server.</description>
+  <name>yarn.timeline-service.http-cross-origin.enabled</name>
+  <value>true</value>
+  <!--hadoop 2.6.0才支持 详细信息见http://search-hadoop.com/m/tQlTsMD%26subj=Tez+nbsp+taskcount+log+visualization-->
+</property>
+
+<property>
+  <description>Comma separated list of origins that are allowed for web
+  services needing cross-origin (CORS) support. Wildcards (*) and patterns
+  allowed</description>
+  <name>yarn.timeline-service.http-cross-origin.allowed-origins</name>
+  <value>*</value>
+</property>
+
+<property>
+  <description>Comma separated list of methods that are allowed for web
+  services needing cross-origin (CORS) support.</description>
+  <name>yarn.timeline-service.http-cross-origin.allowed-methods</name>
+  <value>GET,POST,HEAD</value>
+</property>
+
+<property>
+  <description>Comma separated list of headers that are allowed for web
+  services needing cross-origin (CORS) support.</description>
+  <name>yarn.timeline-service.http-cross-origin.allowed-headers</name>
+  <value>X-Requested-With,Content-Type,Accept,Origin</value>
+</property>
+
+<property>
+  <description>The number of seconds a pre-flighted request can be cached
+  for web services needing cross-origin (CORS) support.</description>
+  <name>yarn.timeline-service.http-cross-origin.max-age</name>
+  <value>1800</value>
+</property>
+
+
+<!--YARN Timeline Server END-->
+
+<!--ACL Start-->
+<property>
+   <name>yarn.acl.enable</name>
+   <value>true</value>
+</property>
+                    
+<property>
+   <name>yarn.admin.acl</name>
+   <value>hadoop,yarn</value>
+</property>
+<!--ACL End-->
+
+</configuration>

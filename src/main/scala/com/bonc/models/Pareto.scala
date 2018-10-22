@@ -2,8 +2,10 @@ package com.bonc.models
 
 import java.io.{File, PrintWriter}
 
+import com.bonc.interfaceRaw.IModel
 import net.sf.json.JSONObject
 import org.apache.spark.SparkConf
+import org.apache.spark.ml.param.Params
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row, RowFactory, SparkSession}
@@ -17,8 +19,22 @@ import util.control.Breaks._
   * Created by Administrator on 2018/9/26 0026.
   */
 
+
+abstract class MultiObjectsAnalysis[T]  extends IModel[T with Object] with java.io.Serializable {
+    override def setParam(params: String): Integer = {
+        f
+        true
+    1ef = dfs2
+    }
+}
+
+
+
+
+
 //目标分量越多，时间越长，得到的可能跟原数据差不多，所以使用原始输入的data.csv, 16个分量，结果Pareto结果是原数据本身
-class Pareto(arrayRow:Array[Row],fitColFrom:Int) extends  Serializable {
+class Pareto(arrayRow:Array[Row],fitColFrom:Int) extends  Serializable  {
+
 //    fitColFrom 是各目标函数的起始列，也等于决策变量的长度
   var localRows = arrayRow
   var cursor = -1
@@ -102,58 +118,62 @@ object Pareto {
     }
 
 
-    def main(args: Array[String]): Unit = {
-//      val input0 = Array(
-//        Array(1, 3, 4, 1),
-//        Array(2, 3, 4, 1), //s
-//        Array(1, 3, 1, 2),
-//        Array(2, 3, 4, 3), //s
-//        Array(5, 3, 4, 2), //s
-//        Array(2, 3, 4, 5)  //s
-//      )
-//      val input = input0.map(x => x.map(_.toDouble))
-//      val arr = input.map(x => Row.fromSeq(x.toSeq))
-//      val pareto = new Pareto(arr)
-//      val result = pareto.pareto()
-      val sparkConf = new SparkConf().setAppName("pareto").setMaster("local[*]")
-      val spark = SparkSession.builder().config(sparkConf).getOrCreate()
-      //加载配置
-      val config = new Config()
-      config.setDataPath("D:\\pycharm\\PycharmProjects\\MOPSO\\data\\dataset.csv")
-              .setJsonPath("D:\\pycharm\\PycharmProjects\\MOPSO\\conf\\fitness_list.json")
-//      println(config.jsonPath)
-      config.process()
-      var df1 = spark.createDataFrame(spark.sparkContext.parallelize(config.data), config.schema)
-      //各列转为Double
-      for(column<-df1.columns) {
-        df1 = df1.withColumn(column, col(column).cast(DoubleType))
-      }
-      df1.printSchema()
-      df1.show
-      //计算Pareto
-      val df2 = Utils.paretoDataFrame(df1,spark)
-      df2.show()
-      println(df2.count())
-    }
+//    def main(args: Array[String]): Unit = {
+////      val input0 = Array(
+////        Array(1, 3, 4, 1),
+////        Array(2, 3, 4, 1), //s
+////        Array(1, 3, 1, 2),
+////        Array(2, 3, 4, 3), //s
+////        Array(5, 3, 4, 2), //s
+////        Array(2, 3, 4, 5)  //s
+////      )
+////      val input = input0.map(x => x.map(_.toDouble))
+////      val arr = input.map(x => Row.fromSeq(x.toSeq))
+////      val pareto = new Pareto(arr)
+////      val result = pareto.pareto()
+//      val sparkConf = new SparkConf().setAppName("pareto").setMaster("local[*]")
+//      val spark = SparkSession.builder().config(sparkConf).getOrCreate()
+//      //加载配置
+//
+//
+////      val config = new Config()
+////      config.setDataPath("D:\\pycharm\\PycharmProjects\\MOPSO\\data\\dataset.csv")
+////              .setJsonPath("D:\\pycharm\\PycharmProjects\\MOPSO\\conf\\fitness_list.json")
+//////      println(config.jsonPath)
+////      config.process()
+////      var df1 = spark.createDataFrame(spark.sparkContext.parallelize(config.data), config.schema)
+////      //各列转为Double
+////      for(column<-df1.columns) {
+////        df1 = df1.withColumn(column, col(column).cast(DoubleType))
+////      }
+////      df1.printSchema()
+////      df1.show
+////      //计算Pareto
+////      val df2 = Utils.paretoDataFrame(df1,spark)
+////      df2.show()
+////      println(df2.count())
+//
+//
+//    }
 
 }
 
 //scala二次构造
 //https://blog.csdn.net/hellojoy/article/details/81183490
-class Mopso (particles:Double,
+class Mopso (particles:Int,
              w: Double,
              c1: Double,
              c2: Double,
              max : Array[Double],
              min: Array[Double],
-             thresh:Long,
-             meshDiv: Long,
+             thresh:Int,
+             meshDiv: Int,
              config: Config,
              fitGoodIn: Array[Array[Double]],
              fitnessGoodIn: Array[Array[Double]]) {
 
-    var maxV = (0 to max.length - 1).toArray.map(x => (max(x) - min(x)) * 0.05)
-    var minV = (0 to max.length - 1).toArray.map(x => (max(x) - min(x)) * 0.05 * (-1))
+    val maxV = (0 to max.length - 1).toArray.map(x => (max(x) - min(x)) * 0.0001)
+    val minV = (0 to max.length - 1).toArray.map(x => (max(x) - min(x)) * 0.0001 * (-1))
     var in:Array[Array[Double]] = _
     var fitness:Array[Array[Double]] = _
     var v:Array[Array[Double]] = _
@@ -170,11 +190,14 @@ class Mopso (particles:Double,
 //      val in = this.config.data
 ////      @warn 先把基础模块写好！
 //      val fitness = ???
-        fitness = Fitness.calcFitness(in, config.exprList, config.inputColumns)
+        fitness = Fitness.calcFitness(in, config.exprList, config.inputColumns, config.spark:SparkSession)
     }
 
 
     def initialize():Unit = {
+
+        println("intialize---------------------------------------------------")
+
         val dvSize = fitGoodIn(0).length
         val fitSize = fitnessGoodIn(0).length
         in = fitGoodIn
@@ -182,23 +205,47 @@ class Mopso (particles:Double,
         evaluateFitness()
         Pbest = init.initPbest(in, fitness)
         //初始化外部储备集
-        val inputRows = Utils.stackRows[Double](in, fitness, 0)
+        //需要横向连接
+        val inputRows = Utils.stackRows[Double](Utils.convertArrayToRows(in), Utils.convertArrayToRows(fitness), 1)
         Archiving = init.initArchiving(inputRows, dvSize)
         Gbest = init.initGbest(Archiving._1, Archiving._2,meshDiv,min, max, particles)
+        println(s"${in} is--------")
+        println(in(0).mkString(","))
+        println(v(0).mkString(","))
     }
 
     def updateOnce():Unit = {
-        v = update.updateV(v, minV, maxV, in, Pbest._1, Gbest._1, w, c1, c2 )
-        in = update.updateIn(in, fitness, Pbest._1, Pbest._2)
+        println(s"${in} is--------")
+        println(in(0).mkString(","))
+        println(v(0).mkString(","))
+        println(v(0).length)
+        println(in(0).length)
+        val vNext = update.updateV(v, minV, maxV, in, Pbest._1, Gbest._1, w, c1, c2 )
+        val inNext = update.updateIn(in, v, min, max)
+//        v = update.updateV(v, minV, maxV, in, Pbest._1, Gbest._1, w, c1, c2 )
+        v = vNext
+//        in = update.updateIn(in, fitness, Pbest._1, Pbest._2)
+//        in = update.updateIn(in, v, minV, maxV)
+        in = inNext
+
+//        in = update.updateIn(in, fitness, minV, maxV)
         evaluateFitness()
+        println(s"${in} is enddddddddddddddddddddddd--------")
+        println(in(0).mkString(","))
+        println(v(0).mkString(","))
+        println(v(0).length)
+        println(in(0).length)
         Pbest = update.updatePbest(in, fitness, Pbest._1, Pbest._2)
         Archiving = update.updateArchiving(in, fitness, Archiving._1, Archiving._2, thresh, meshDiv, min, max, particles)
         Gbest = update.updateGbest(Archiving._1, Archiving._2, meshDiv, min, max, particles)
+
+
     }
 
     def process(maxIter:Int):(Array[Array[Double]],Array[Array[Double]]) = {
         initialize()
         for(iterNum<- 0 to maxIter - 1) {
+            println(s"第${iterNum}次更新----------------------------------------")
             updateOnce()
         }
         Archiving
@@ -217,16 +264,21 @@ class Predict(var newRecordsIn:Array[Array[Double]],
     var front:Array[Row] =  _
     var optimizeRatio = 0.0
     var sep = ","
+    var dvSize = newRecordsIn(0).length
+
 
     def init(sep1:String):Unit = {
         sep = sep1
         //@warn historyModelPath存储的信息包括：决策变量、目标变量
-        historySolveOld = Utils.load(historyModelPath,sep)
-        front = Utils.load(frontPath,sep)
+//        原代码中，读取的是String类型
+//        historySolveOld = Utils.load(historyModelPath,sep)
+//        front = Utils.load(frontPath,sep)
+        historySolveOld = Utils.load(historyModelPath,sep,"Double")
+        front = Utils.load(frontPath,sep,"Double")
     }
 
     def getRecordFitness():Unit = {
-        newRecordsFit = Fitness.calcFitness(newRecordsIn, conf.exprList, conf.inputColumns)
+        newRecordsFit = Fitness.calcFitness(newRecordsIn, conf.exprList, conf.inputColumns, conf.spark)
         newRecordRows = Utils.convertArrayToRows(Utils.hStack(newRecordsIn, newRecordsFit))
     }
 
@@ -250,7 +302,8 @@ class Predict(var newRecordsIn:Array[Array[Double]],
         val dvSize = conf.inputColumns.length
         val rowsSize = front(0).length
 //        newRecordRows只有一行
-        val newRecordArray = Utils.convertRowsToArray(newRecordRows)
+        val newRecordArray = Utils.convertRowsToArray(newRecordRows)(0)
+
         val getHistoryBestRow = getBestSolve(newRecordArray,newHistoryRows, dvSize )
         val getFrontRow = getBestSolve(newRecordArray,newHistoryRows, dvSize)
 
@@ -258,7 +311,7 @@ class Predict(var newRecordsIn:Array[Array[Double]],
         val historyFitness = Row(getHistoryBestRow.slice(dvSize,rowsSize).toSeq:_*)
         val frontFitness = Row(getFrontRow.slice(dvSize, rowsSize).toSeq:_*)
 
-        if (Pareto.compare(historyFitness, frontFitness) == false ) {
+        if (Pareto.compare(historyFitness, frontFitness) == false && conf.optimizeRatio !=0D ) {
             optimizeRatio = conf.optimizeRatio
         } else {
             optimizeRatio = 0.0
@@ -267,19 +320,49 @@ class Predict(var newRecordsIn:Array[Array[Double]],
         val suggestedParticleIn = Array( (0 to dvSize - 1)
                 .map(x => getHistoryBestRow(x) + optimizeRatio * (getFrontRow(x) - getHistoryBestRow(x)) ).toArray
         )
-        val suggestedParticleFit = Fitness.calcFitness(suggestedParticleIn,conf.exprList, conf.inputColumns)
+        val suggestedParticleFit = Fitness.calcFitness(suggestedParticleIn,conf.exprList, conf.inputColumns, conf.spark)
 
         val goalSize = conf.goalSize
-        //计算优化程度
-        val optimizedLevel = (0 to goalSize - 1).map(x => -( (suggestedParticleFit(0)(x) - newRecordArray(0)(x) ) / newRecordArray(0)(x) ) ).toArray
+//        计算优化程度
+//        原代码：计算错误，应是Fitness之间的比较
+        //加入math.abs是为了避免“分母或决策变量为负”的情形，当其为负时， 即使优化的改变量为正， 优化水平比例最终也为负
+//        val optimizedLevel = (0 to goalSize - 1).map(x => -( (suggestedParticleFit(0)(x) - newRecordArray(x) ) / newRecordArray(x) ) ).toArray
+        val optimizedLevel = (0 to goalSize - 1).map(x => -( (suggestedParticleFit(0)(x) - newRecordsFit(0)(x) ) / math.abs(newRecordsFit(0)(x)) ) ).toArray
+
+//        val optimizedLevel = (0 to goalSize - 1).map(x => -( (suggestedParticleFit(0)(x) - newRecordArray(0)(x) ) / newRecordArray(0)(x) ) ).toArray
         val goalsLevel = (0 to goalSize - 1).map(x => s"goal${x+1}_level")
         val title = conf.inputColumns.union(goalsLevel)
         val value = suggestedParticleIn(0).union(optimizedLevel)
-        val suggestion = Utils.convertArrayToRows(Array(title).union(Array(value)) )
+//        val suggestion = Utils.convertArrayToRows(Array(title).union(Array(value)) )
+        val suggestion = Utils.convertArrayAnyToRows(Array(title).union(Array(value)) )
         Utils.save(suggestion, "data/suggestion.txt", ",")
+
+        println(s"optimizeRatio is ${optimizeRatio}")
 
         suggestion
     }
+
+    //新数据和历史数据作pareto比较，1.如新数据占优，则使用新数据；2.如历史数据占优，则找到与新数据角度最小、且都优于新数据的
+    //对应2的处理方法：对全局粒子按与新数据的角度升序排序， 然后获取依次与新数据粒子比较，找到第一个占优于新数据的粒子，将其作为参考意见
+//    def suggestionWithoutFront(sep:String):Array[Row] = {
+//        val allHistoryRows = Utils.stackRows(newRecordRows, historySolveOld, 0)
+//        val allSize = newRecordRows(0).length
+//        val allHistoryFitRows = Utils.sliceRows(dvSize, allSize)
+//        val histSize = historySolveOld.length
+//        val newRecordsFitRow = Utils.convertArrayToRows(newRecordsFit)(0)
+//
+//        val flag = true
+//        val suggestion:Array[Array[Double]] = flag match {
+//            case flag if Pareto.judge(newRecordsFitRow, allHistoryFitRows, -1 ) == flag => newRecordsIn
+//            case flag if !Pareto.judge(newRecordsFitRow, allHistoryFitRows, -1 ) == flag =>
+//        }
+//        //如果新粒子占优，则建议位置为新粒子，即不变； 否则找出历史较优的
+//        if (Pareto.judge(newRecordsFitRow, allHistoryFitRows, -1 )) {
+//
+//        }
+//
+//    }
+
 
     def predict(sep:String):Array[Row] = {
         init(sep)
@@ -295,7 +378,7 @@ class Predict(var newRecordsIn:Array[Array[Double]],
     def getBestSolve(currRow:Array[Double], rows:Array[Array[Double]], dvSize:Int):Array[Double] = {
         val rowsSize = rows.length
         val sortedArray =  (0 to rowsSize - 1)
-                .map(x => (x, calcAngle(currRow.slice(dvSize,rowsSize),rows(i).slice(dvSize,rowsSize)) ))
+                .map(x => (x, calcAngle(currRow.slice(dvSize,rowsSize),rows(x).slice(dvSize,rowsSize)) ))
                 .toArray
                 //按第二列：最小角度，升序
                 .sortBy(x => x._2)
@@ -322,59 +405,85 @@ class Predict(var newRecordsIn:Array[Array[Double]],
 
 
 object Fitness {
-    def calcFitness(in:Array[Array[Double]], exprList:Array[String], fieldNames:Array[String]):Array[Array[Double]] = {???}
+    def calcFitness(in:Array[Array[Double]], exprList:Array[String], fieldNames:Array[String], spark:SparkSession):Array[Array[Double]] = {
+        val fields = fieldNames.map(fieldName => StructField(fieldName, DoubleType, nullable = true))
+        val schema = StructType(fields)
+        val rowRDD = spark.sparkContext.parallelize(in.map(x => Row(x.toSeq:_*)))
+        println("good")
+        println("exprList is :----------------------------")
+        println(fields.mkString(","))
+        println("exprList is :----------------------------")
+        println(exprList.mkString("----"))
+        var df = spark.createDataFrame(rowRDD, schema)
+
+        val goalSize = exprList.length
+        (0 to goalSize - 1).toArray.map(x => df = df.withColumn(s"goalSize_${x}", expr(exprList(x))))
+        val goalCols  = (0 to goalSize - 1).toArray.map(x => col(s"goalSize_${x}"))
+
+        df.show()
+
+        df = df.select(goalCols:_*)
+//        df.show()
+        df.collect().map(x => x.toSeq.toArray.map(x => x.asInstanceOf[Double]))
+    }
+
 
     //  仅用于第一次计算适应度
     def evaluateFitnessFirst(input:Array[Array[Double]],conf:Config):Array[Array[Double]] = {
-        fitness = Fitness.calcFitness(input,conf.exprList,conf.inputColumns )
-
+        val fitness = Fitness.calcFitness(input,conf.exprList,conf.inputColumns,conf.spark )
+        fitness
     }
 }
 
 
 //加val才表示是该类的成员变量，不能仅仅只在构造器中传递参数而已
-class MeshCrowd (var currArchivingIn:Array[Array[Double]],
-                 var currArchivingFit:Array[Array[Double]],
-                 var meshDiv:Long,
-                 var min:Array[Double],
-                 var max:Array[Double],
-                 var particles:Long) {
-    var num = currArchivingIn.length
-    var idArchiving = new Array[Long](num)
+class MeshCrowd (val currArchivingIn:Array[Array[Double]],
+                 val currArchivingFit:Array[Array[Double]],
+                 val meshDiv:Int,
+                 val min:Array[Double],
+                 val max:Array[Double],
+                 val particles:Int) {
+    var num:Int = currArchivingIn.length
+    var idArchiving:Array[Long] = new Array[Long](num)
   //  此处应为2维，使用ofDim
-    var crowdArchiving = new Array[Long](num)
+    var crowdArchiving:Array[Int] = new Array[Int](num)
   //  此处应为2维
-    var probabilityArchiving = new Array[Double](num)
-    var gbestIn = Array.ofDim(particles, currArchivingIn(0).length)
-    var gbestFit = Array.ofDim(particles,currArchivingFit(0).length)
+    var probabilityArchiving:Array[Double] = new Array[Double](num)
+    var gbestIn:Array[Array[Double]] = Array.ofDim(particles, currArchivingIn(0).length)
+    var gbestFit:Array[Array[Double]] = Array.ofDim(particles,currArchivingFit(0).length)
 
 
 
     def calcMeshId(in:Array[Double]):Long = {
-        var id = 0
+        var id:Long = 0L
         val size = currArchivingFit(0).length
 //      计算网格id
         id = (0 to size - 1 ).toArray
-            .map(x => ( (in(i) - min(i)) * num / (max(i) - min(i)) ).toInt * (math.pow(meshDiv, x)) )
+                .map(x => ( (in(x) - min(x)) * num / (max(x) - min(x)) ).toInt * (math.pow(meshDiv, x)).toLong )
+//            .map(x => ( (in(i) - min(i)) * num / (max(i) - min(i)) ).toInt * (math.pow(meshDiv, x)) )
             .reduce(_+_)
+        println(s"id is $id--------------------------------------------------------------------------")
         id
     }
 
     def divideArchiving():Unit = {
         (0 to num - 1).toArray
 //                map函数可以传入赋值
-                .map(x => idArchiving(x) = calcMeshId(currArchivingFit(x)))
+                .map(x => idArchiving(x) = calcMeshId(currArchivingIn(x)))
+//       原代码是对in计算网格，而不是fitness，和书中略有不同
+//                .map(x => idArchiving(x) = calcMeshId(currArchivingFit(x)))
     }
 
     def getCrowd():Unit = {
         val index = (0 to num - 1).toArray
 
 //        形如Map(2 -> 1, 5 -> 3, 4 -> 2, 1 -> 1)
+//        此处类似于词频统计，统计idArchiving中元素出现的次数
         val map = idArchiving.map(x=> (x,1))
                     .groupBy(_._1)
                     .map(x =>  (x._1, x._2.size))
 //        若idArchiving形如Array(5,5,3,5,2,1),则crowArchiving形如Array(3,3,1,3,1,1),即对应顺序下的词频统计
-        crowdArchiving = (0 to idArchiving.length - 1)
+        crowdArchiving = (0 to idArchiving.length - 1).toArray
                     .map(x => map.get(idArchiving(x)) match {
                         case Some(a) => a
                     })
@@ -382,22 +491,27 @@ class MeshCrowd (var currArchivingIn:Array[Array[Double]],
 }
 
 
-class GetGbest extends MeshCrowd {
+class GetGbest (override val currArchivingIn:Array[Array[Double]],
+                override val currArchivingFit:Array[Array[Double]],
+                override val meshDiv:Int,
+                override val min:Array[Double],
+                override val max:Array[Double],
+                override val particles:Int) extends MeshCrowd(currArchivingIn,currArchivingFit,meshDiv,min,max,particles) {
 
     def getProbability():Unit = {
         val probabilityArray = (0 to num - 1)
                     .map(x => 10.0 / math.pow(crowdArchiving(x), 3 ) )
         val sum = probabilityArray.reduce(_+_)
 //        math.pow计算出为Double型
-        probabilityArchiving = probabilityArray.map(x => x / sum)
+        probabilityArchiving = probabilityArray.toArray.map(x => x / sum)
     }
 
-    def getGbestIndex(num:Int):Int = {
+    def getGbestIndex():Int = {
         var index = 0
-        val rand = math.random()
+        val rand = math.random
         for(i<- 0 to num - 1) {
             breakable(
-                if (rand <= probabilityArchiving.slice(0, i + 1)) {
+                if (rand <= probabilityArchiving.slice(0, i + 1).sum) {
                     index = i
                     break()
                 }
@@ -417,13 +531,19 @@ class GetGbest extends MeshCrowd {
     }
 }
 
-class ClearArchiving extends MeshCrowd {
-    var thresh:Long = _
+class ClearArchiving (override val currArchivingIn:Array[Array[Double]],
+                      override val currArchivingFit:Array[Array[Double]],
+                      override val meshDiv:Int,
+                      override val min:Array[Double],
+                      override val max:Array[Double],
+                      override val particles:Int) extends MeshCrowd(currArchivingIn,currArchivingFit,meshDiv,min,max,particles) {
+    var thresh:Int = _
 //    也需要归一化
+
     def getProbability():Unit = {
         val powerTwo = crowdArchiving.map(x => math.pow(x,2))
         val sum = powerTwo.reduce(_+_)
-        probabilityArchiving = (0 to num - 1).map(x => powerTwo(x) / sum )
+        probabilityArchiving = (0 to num - 1).toArray.map(x => powerTwo(x) / sum )
     }
 
     def getClearIndex():Array[Int] = {
@@ -438,15 +558,21 @@ class ClearArchiving extends MeshCrowd {
         return clearIndex.toArray
     }
 //    超过外部储备集容量时，删除表现"不好"的粒子
-    def clear(thresh:Long):Tuple2[Array[Array[Double]], Array[Array[Double]]] = {
+    def clear(thresh:Int):Tuple2[Array[Array[Double]], Array[Array[Double]]] = {
         this.thresh = thresh
         this.getProbability()
         val clearIndex = getClearIndex()
-        val currArchivingInClone = currArchivingIn.clone()
-        val currArchivingFitClone = currArchivingFit.clone()
-        currArchivingIn = (0 to currArchivingIn.length - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingInClone(x))
-        currArchivingFit = (0 to currArchivingFit.length - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingFitClone(x))
-        (currArchivingIn, currArchivingFit)
+//        val currArchivingInClone = currArchivingIn.clone()
+//        val currArchivingFitClone = currArchivingFit.clone()
+//        currArchivingIn = (0 to currArchivingIn.length - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingInClone(x))
+//        currArchivingFit = (0 to currArchivingFit.length - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingFitClone(x))
+        val sizeIn = currArchivingIn.length
+        val sizeFit = currArchivingFit.length
+
+        //
+        val currArchivingInNew = (0 to sizeIn - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingIn(x))
+        val currArchivingFitNew = (0 to sizeFit - 1).filter(x => !clearIndex.contains(x)).toArray.map(x=> currArchivingFit(x))
+        (currArchivingInNew, currArchivingFitNew)
     }
 }
 
@@ -460,8 +586,9 @@ object init {
         v
     }
 
-    def initPbest(in:Array[Row], fitness:Array[Row]):Tuple2[Array[Array[Double]],Array[Array[Double]]] = {
-        Tuple2(Utils.convertRowsToArray(in), Utils.convertRowsToArray(fitness))
+    def initPbest(in:Array[Array[Double]], fitness:Array[Array[Double]]):Tuple2[Array[Array[Double]],Array[Array[Double]]] = {
+//        Tuple2(Utils.convertRowsToArray(in), Utils.convertRowsToArray(fitness))
+        (in, fitness)
     }
 
     //inputRows 包含决策变量和Fitness变量横向连接，形成新的Array[Row]
@@ -476,10 +603,10 @@ object init {
 
     def initGbest(currArchivingIn:Array[Array[Double]],
                  currArchivingFit:Array[Array[Double]],
-                  meshDiv:Long,
+                  meshDiv:Int,
                   min:Array[Double],
                   max:Array[Double],
-                  particles:Long):Tuple2[Array[Array[Double]],Array[Array[Double]]] = {
+                  particles:Int):Tuple2[Array[Array[Double]],Array[Array[Double]]] = {
         val getGbest = new GetGbest(currArchivingIn, currArchivingFit, meshDiv, min, max, particles)
         getGbest.getGbest()
     }
@@ -510,9 +637,18 @@ object update {
 //                                case (x,y) =>w * params1(0)(x)(y) + c1 * r1 * ( params2(2)(y) - params1(1)(x)(y) ) + c2 * r2 * (params2(3)(y) - in(x)(y) )
 //                                })
 //                )
+        val map = Map("v0"->v.length,"v1"->v(0).length,"vMin"->vMin.length,"vMax"->vMax.length ,
+        "in0"->in.length, "in1"->in(0).length,
+    "pb0"->inPbest.length, "pb1"->inPbest(0).length,
+    "gb0"->inGbest.length, "gb1"->inGbest(0).length
+)
+        println("map is -------------------------------------------------------")
+        println(map)
 
+        val r1 = math.random
+        val r2 = math.random
         //Array[Tuple2]中对Tuple2操作的方法：val b = a.map( x =>  x match { case (x,y) => x +y })， 需要使用匿名函数
-        val vNextGen = Utils.genNdArrayIndex(v.length, v(0).length)
+        var vNextGen = Utils.genNdArrayIndex(v.length, v(0).length)
                 //            .map(
                 //                x => w * params1(0)(x._1)(x._2) + c1 * r1 * ( params2(2)(x._2) - params1(1)(x._1)(x._2) ) + c2 * r2 * (params2(3)(x._2) - in(x._1)(x._2) )
                 //            )
@@ -522,36 +658,76 @@ object update {
                 )
 
 
-        for(i<- 0 to v.length - 1) {
-            for(j<- 0 to v(0).length - 1) {
-                if(vNextGen(i)(j) < vMin(j) ) {
-                    vNextGen(i)(j) = vMin(j)
-                }else if (vNextGen(i)(j) > vMax(j)) {
-                    vNextGen(i)(j) = vMax(j)
-                }
+//        for(i<- 0 to v.length - 1) {
+//            for(j<- 0 to v(0).length - 1) {
+//                if(vNextGen(i)(j) < vMin(j) ) {
+//                    vNextGen(i)(j) = vMin(j)
+//                }else if (vNextGen(i)(j) > vMax(j)) {
+//                    vNextGen(i)(j) = vMax(j)
+//                }
+//
+//            }
+//        }
 
-            }
-        }
+        Utils.genNdArrayIndex(v.length, v(0).length)
+                .map(x => x.map( tuple => tuple match {
+            case (i,j) if vNextGen(i)(j) <= vMin(j) => vNextGen(i)(j) = vMin(j)
+            case (i,j) if vNextGen(i)(j) >= vMax(j) => vNextGen(i)(j) = vMax(j)
+            case (i,j) => vNextGen(i)(j) = vNextGen(i)(j)
+        })
+        )
+
+
         vNextGen
     }
 
     def updateIn(in:Array[Array[Double]], v:Array[Array[Double]], inMin:Array[Double], inMax:Array[Double]):Array[Array[Double]] = {
+        println("in0 start is----------------------------------------")
+        println(in(0).mkString(","))
+        println(v(0).length)
+        println(in(0).length)
+
         val rowSize = in.length
         val colSize = in(0).length
-        val inNextGen = Utils.genNdArrayIndex(rowSize, colSize)
+        var inNextGen = Utils.genNdArrayIndex(rowSize, colSize)
                 .map(array => array.map( tuple => tuple match {
                     case (x,y) => in(x)(y) + v(x)(y)
                 }) )
+        println("inNextGen middle is----------------------------------------")
+        println(inNextGen(0).mkString(","))
+        println(v(0).length)
+        println(in(0).length)
 
-        for (i<-0 to rowSize - 1 ) {
-            for (j<- 0 to colSize - 1) {
-                if (inNextGen(i)(j) < inMin(j)) {
-                    inNextGen(i)(j) = inMin(j)
-                } else if (inNextGen(i)(j) > inMax(j)) {
-                    inNextGen(i)(j) = inMax(j)
-                }
-            }
-        }
+//        for (i<-0 to rowSize - 1 ) {
+//            for (j<- 0 to colSize - 1) {
+//                if (inNextGen(i)(j) < inMin(j)) {
+//                    inNextGen(i)(j) = inMin(j)
+//                } else if (inNextGen(i)(j) > inMax(j)) {
+//                    inNextGen(i)(j) = inMax(j)
+//                }
+//            }
+//        }
+
+        println("1inMax, 2inMin -------------------------------------")
+        println(inMax.mkString(","))
+        println(inMin.mkString(","))
+
+
+        Utils.genNdArrayIndex(in.length, in(0).length)
+                .map(x => x.map( tuple => tuple match {
+                    case (i,j) if inNextGen(i)(j) < inMin(j) => inNextGen(i)(j) = inMin(j)
+                    case (i,j) if inNextGen(i)(j) > inMax(j) => inNextGen(i)(j) = inMax(j)
+                    case (i,j) => inNextGen(i)(j) = inNextGen(i)(j)
+                })
+                )
+
+
+
+        println("inNextGen last is----------------------------------------")
+        println(inNextGen(0).mkString(","))
+        println(v(0).length)
+        println(in(0).length)
+
         inNextGen
     }
 
@@ -563,6 +739,7 @@ object update {
                 .map(x => x match {
                     case x if inIndividual(x) > pbestIndividual(x) => greater = greater + 1
                     case x if inIndividual(x) < pbestIndividual(x) => less = less + 1
+                    case x if inIndividual(x) == pbestIndividual(x) =>
                 })
 //        println(s"greater is $greater")
 //        println(s"less is $less")
@@ -572,7 +749,7 @@ object update {
             case (x,y) if (x == 0 && y > 0) =>true
             case _ =>  rand match {
                 case z if z > 0.5 => true
-                case z if z < 0.5 => false
+                case z if z <= 0.5 => false
             }
         }
         flag
@@ -586,6 +763,8 @@ object update {
                 .map(x => x match {
                     case x if comparePbest(fitness(x),fitnessPbest(x)) => (in(x), fitness(x))
                     case x if !comparePbest(fitness(x),fitnessPbest(x)) => (inPbest(x),fitnessPbest(x))
+                    case x => (in(x), fitness(x))
+
                 })
         (arrayTuple.map(x=>x._1), arrayTuple.map(x=>x._2))
     }
@@ -599,15 +778,19 @@ object update {
                         min:Array[Double],
                         max:Array[Double],
                         particles:Int):Tuple2[Array[Array[Double]],Array[Array[Double]]] = {
-        val dvSize = in.length
-        val inputs = Utils.convertArrayToRows(Utils.stack(in, fitness))
+        val dvSize = in(0).length
+        println(s"dvSize is ${dvSize}---------------------------------------------------------------")
+        val inputs = Utils.convertArrayToRows(Utils.stack(in, fitness, 1))
+        println("stage0---------------------------------")
         val pareto1 = new Pareto(inputs, dvSize)
-        val firstPareto = pareto.pareto()
+        val firstPareto = pareto1.pareto()
+        println("stage1---------------------------------")
         val oldArchivingRows = Utils.convertArrayToRows(Utils.hStack(in, fitness))
         val concatArchingRows = Utils.stackRows[Double](oldArchivingRows, firstPareto, 0)
-
+        println("stage2---------------------------------")
         val pareto2 = new Pareto(concatArchingRows, dvSize)
         val newArchiving = Utils.convertRowsToArray(pareto2.pareto())
+        println("stage3---------------------------------")
 
         var currArchivingIn = newArchiving.map(x => x.slice(0, dvSize))
         var currArchivingFit = newArchiving.map(x => x.slice(dvSize,x.length))
@@ -618,6 +801,7 @@ object update {
             currArchivingIn = clearedArchiving._1
             currArchivingFit = clearedArchiving._2
         }
+        println("stage4---------------------------------")
         return (currArchivingIn, currArchivingFit)
 
     }
@@ -646,8 +830,12 @@ class Config() {
   var inputColumns:Array[String] = _
   //初始化后的schema，是已经修改过字段名的schema，是仅仅修改了字段名的“读取csv的df的schema”
   var schema: StructType = _
+
+//  var sparkConf = new SparkConf().setMaster("local[*]").setAppName("mospo")
   @transient
-  var spark = SparkSession.builder().getOrCreate()
+  var spark = SparkSession.builder()
+//          .config(sparkConf)
+          .getOrCreate()
 
 
   def init():this.type = {
@@ -688,7 +876,7 @@ class Config() {
   }
   //此处字段名还没有修改
   def readData():this.type = {
-    val df = spark.read.option("header",true).csv(dataPath)
+    val df = spark.read.option("header",true).option("inferSchema","true").csv(dataPath)
 //    获取输入数据的字段名，用于后续的表达式计算和字段选择
     inputColumns = df.columns
     schema = df.schema
@@ -744,14 +932,34 @@ object Utils {
       array.map(x => Row(x:_*) )
   }
 
+    //typeName应该是原生类型：Double,Integer,Boolean,Float,Byte,Short,Long, 不支持Char
+    def load(path:String, sep:String, typeName:String):Array[Row] = {
+        val file = Source.fromFile(path)
+        val array = file.getLines().toArray[String]
+                .map(x => x.split(sep))
+        file.close()
+        array.map(x => x.map(ele => typeName match {
+                case "Double"  => java.lang.Double.parseDouble(ele)
+                case "Integer" => java.lang.Integer.parseInt(ele)
+                case "Boolean" => java.lang.Boolean.parseBoolean(ele)
+                case "Float"   => java.lang.Float.parseFloat(ele)
+                case "Byte"    => java.lang.Byte.parseByte(ele)
+                case "Short"   => java.lang.Short.parseShort(ele)
+                case "Long"    => java.lang.Long.parseLong(ele)
+                case _          => throw new Exception("not primitive data types")
+        } )).map(x => Row(x:_*) )
+    }
+
   // 此处支持任意类型的写入
   def save(array:Array[Row],path:String, sep:String):Unit = {
       val writer = new PrintWriter(new File(path))
       array.map(x => x.mkString(sep)).foreach(x => writer.println(x))
+      writer.close()
   }
 
+
   def rowToArrayDouble(row:Row):Array[Double] = {
-      row.toSeq.toArray
+      row.toSeq.toArray.map(x => x.asInstanceOf[Double])
   }
 
   def arrayDoubleToRow(array: Array[Double]): Row = {
@@ -766,6 +974,12 @@ object Utils {
   def convertArrayToRows(array:Array[Array[Double]]):Array[Row] = {
       array.map(x => arrayDoubleToRow(x))
   }
+
+    // Array[Array[_ >:String with Double]] 转成 Array[Row]
+    def convertArrayAnyToRows(array:Array[Array[_ >:String with  Double]]):Array[Row] = {
+//        array.map(x => arrayDoubleToRow(x))
+        array.map(x => Row(x.toSeq:_*))
+    }
 
 //    生成二维坐标id，二维Array中的元素是Tuple2,（x,y)，分别对应行、列坐标
   def genNdArrayIndex(rowSize:Int, colSize:Int): Array[Array[Tuple2[Int,Int]]] = {
@@ -837,9 +1051,9 @@ object Utils {
     val fieldsLength = conf.schema.length
     val df = spark.createDataFrame(rdd, conf.schema)
 //    获取各维最大边界
-    val maxBounds = df.select(df.columns.map(x => max(x) ):_*).collect()(0).toSeq.asInstanceOf[Array[Double]]
+    val maxBounds = df.select(df.columns.map(x => max(x) ):_*).collect()(0).toSeq.toArray.map(x =>x.asInstanceOf[Double])
 //    获取各维最小边界
-    val minBounds = df.select(df.columns.map(x => min(x) ):_*).collect()(0).toSeq.asInstanceOf[Array[Double]]
+    val minBounds = df.select(df.columns.map(x => min(x) ):_*).collect()(0).toSeq.toArray.map(x =>x.asInstanceOf[Double])
     (maxBounds, minBounds)
   }
 
@@ -853,35 +1067,100 @@ object Utils {
 
   //分布式计算Pareto——注,此处没有键，相对原始数据，行的位置会发生变化
   def paretoDataFrame(df:DataFrame, spark:SparkSession): DataFrame = {
-    val rddPareto = df.rdd.mapPartitions[Row](iter =>{
-      val obj = new Pareto(iter.toArray)
-      obj.pareto().toIterator
+      val rddPareto = df.rdd.mapPartitions[Row](iter =>{
+//          此处不分fitness和fit，是对所有列作pareto
+          val obj = new Pareto(iter.toArray, 0)
+          obj.pareto().toIterator
     })
     val schema = df.schema
     spark.createDataFrame(rddPareto, schema )
   }
 }
 
+//评估
+class Metrics {
+    def evaluate(historyPath:String, frontPath:String):(Double,Double) = {
+        val history = Utils.load(historyPath,",","Double")
+        val front = Utils.load(frontPath, ",","Double")
+        val concat = Utils.stackRows(history,front,0)
+        val pareto2 = new Pareto(concat, 16)
+        val rows = pareto2.pareto()
+        //评估，新的解中，有多少来源于history，有多少来源于front
+        (2d,2d)
+    }
+}
+
+class MopsoParams(params:String) {
+    var w= 0.8
+    var c1 = 1.49
+    var c2 = 1.49
+    var maxIter = 100
+    var meshDiv = 10
+    var thresh = 2000
+//    无默认值的成员变量放在最后
+    var inputColumns:Array[String] = _
+
+    def setDefault() = Map("w"->0.8,"c1"->1.49,"c2"->1.49,"maxIter"->100,"meshDiv"->10,"thresh"->2000)
+    //如果参数为空（即可设定参数为可选，非必选），使用反射
+    def parse():Unit = {
+        val jsonStr = JSONObject.fromObject(params)
+        w = jsonStr.getString("w").toDouble
+        c1 = jsonStr.getString("c1").toDouble
+        c2 = jsonStr.getString("c2").toDouble
+        maxIter = jsonStr.getString("maxIter").toInt
+        meshDiv = jsonStr.getString("meshDiv").toInt
+        thresh = jsonStr.getString("thresh").toInt
+        inputColumns = jsonStr.getString("inputColumns").split(",")
+
+        val fieldNames = classOf[MopsoParams].getDeclaredFields().map(x => x.getName())
+        val fields = Array(w,c1,c2,maxIter,meshDiv,thresh)
+
+        val default = setDefault()
+        (0 to fields.length - 1).toArray.map(x => x match {
+            case x if jsonStr.getString(fieldNames(x)) == null && x <3  => fields(x) = default.get(fieldNames(x)) match {case Some(a) => a.asInstanceOf[Double]}
+            case x if jsonStr.getString(fieldNames(x)) == null && x >= 3  => fields(x) = default.get(fieldNames(x)) match {case Some(a) => a.asInstanceOf[Int]}
+            case _ => println(s"param $x is given")
+        })
+
+
+        val newMap = Map("w"->w,"c1"->c1,"c2"->c2,"maxIter"->maxIter,"meshDiv"->meshDiv,"thresh"->thresh)
+        println(newMap)
+
+    }
+}
+
+
 object Main{
     def train():Unit = {
+//        val w = 0.001
+//        val c1 = 0.0005
+//        val c2 = 0.0005
+
         val w = 0.8
-        val c1 = 0.3
-        val c2 = 0.3
-        val maxIter = 30
+        val c1 = 1.49
+        val c2 = 1.49
+
+        val maxIter = 100
         val meshDiv = 10
-        val thresh = 300
+        val thresh = 2000
 
         val sparkConf =new SparkConf().setAppName("MOPSO").setMaster("local[*]")
         val spark = SparkSession.builder().config(sparkConf).getOrCreate()
 
         val dataPath = "data/dataset.csv"
         val jsonPath = "conf/fitness_list.json"
+//        val jsonPath = "conf/fitness_list_one_obj.json"
         val historyPath = "data/history.txt"
         val frontPath = "data/front.txt"
 
         val conf = Utils.loadConf(dataPath, jsonPath)
         //bounds = (maxBounds, minBounds)
         val bounds = Utils.getBoundaries(conf, spark)
+
+        println("bounds is 1max,2min--------------------------------")
+        println(bounds._1.mkString(","))
+        println(bounds._2.mkString(","))
+
         val in = Utils.convertRowsToArray(conf.data)
         val fitness = Fitness.evaluateFitnessFirst(in,conf)
         //决策变量个数
@@ -895,7 +1174,7 @@ object Main{
         val firstIn = paretoResult.map(x => x.slice(0, dvSize))
         val firstFit = paretoResult.map(x => x.slice(dvSize, paretoResult(0)length))
         //@warn 1 如何写入"data/history.txt"
-        Utils.save(paretoResult,historyPath,",")
+        Utils.save(Utils.convertArrayToRows(paretoResult),historyPath,",")
 
         val particles = paretoResult.length
         //进入MOPSO算法
@@ -909,16 +1188,21 @@ object Main{
         println("done------------------------------------------------------------")
     }
 
-    def predict(conf:Config):Array[Row] = {
+    def predict():Array[Row] = {
         val inputs = Array(
-            Array(517.8949,2076.314,58.81879,518.4253,518.5405,0.8460992,170.3783,190.4063,0.8496983,4232.092,2682.538,522.1612,2852.043,162.719,3.500751,75145.9)
+            Array(511.3011, 2049.423, 61.28843, 510.1878, 512.6577, -0.1523816, 171.1836, 198.8354, -0.14898500000000003, 4741.163, 2852.076, 515.1774, 3074.927, 165.1196, 2.301176, 70394.18)
         )
         val dataPath = "data/dataset.csv"
         val jsonPath = "conf/fitness_list.json"
         val historyPath = "data/history.txt"
         val frontPath = "data/front.txt"
         val sep = ","
+
+        val sparkConf = new SparkConf().setAppName("predict").setMaster("local[*]")
+        val spark = SparkSession.builder().config(sparkConf).getOrCreate()
+
         val conf = Utils.loadConf(dataPath, jsonPath)
+        conf.spark = spark
         val result = new Predict(inputs,conf,historyPath,frontPath).predict(sep)
 
         println("predict finished ---------------------------------------")
@@ -939,4 +1223,17 @@ object myUDF {
     }
     x
   }
+}
+
+
+
+object mains {
+    def main(args: Array[String]): Unit = {
+//        Main.train()
+        Main.predict()
+
+//        val rows = Array(Row(1.0,2.1,3.3), Row(2.1,2.3,2.2), Row(3.1,3.2,33.1))
+//        val path = "data/test.txt"
+//        Utils.save(rows, path, ",")
+    }
 }
